@@ -40,7 +40,10 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "layout": "grid",
     "home_layout": "top",
     "weather_entity": "",
-    "screensaver": 0,
+    "screensaver": 5,
+    "faces": ["painel", "relogio"],
+    "start_face": "painel",
+    "ambient_face": "relogio",
     "big_rooms": [],
     "big_devices": [],
     "device_order": {},
@@ -51,6 +54,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "wall_height": 30,
     "settings_version": 2,
 }
+FACE_IDS = ["painel", "mosaico", "mosaico_plus", "relogio", "fluxo"]
 DOCK_ITEMS = ["home", "rooms", "house", "scenes", "climate", "security"]
 DEVICE_TYPES = [
     "ceiling", "lamp", "led", "spot", "bulb", "tv", "appletv", "homepod", "speaker", "ac", "fan", "purifier",
@@ -157,6 +161,9 @@ def ws_subscribe(hass: HomeAssistant, connection: websocket_api.ActiveConnection
         vol.Optional("home_layout"): vol.In(["classic", "top", "columns", "sidebar"]),
         vol.Optional("weather_entity"): vol.Any("", "open-meteo", vol.Match(r"^weather\.[a-z0-9_]+$")),
         vol.Optional("screensaver"): vol.All(int, vol.Range(min=0, max=240)),
+        vol.Optional("faces"): vol.All([vol.In(FACE_IDS)], vol.Length(min=1)),
+        vol.Optional("start_face"): vol.In(FACE_IDS),
+        vol.Optional("ambient_face"): vol.In(FACE_IDS),
         vol.Optional("big_rooms"): [str],
         vol.Optional("big_devices"): [str],
         vol.Optional("device_order"): {str: [str]},

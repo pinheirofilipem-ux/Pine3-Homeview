@@ -10,10 +10,8 @@ export class BindMixin {
   _bind() {
     const root = this.shadowRoot;
     const on = (sel, fn) => root.querySelectorAll(sel).forEach((el) => el.addEventListener("click", (ev) => { if (!this._ghost(el)) fn(el, ev); }));
-    if (this._saver) {
-      root.querySelector("[data-saver]")?.addEventListener("click", () => { this._saver = false; this._lastActivity = Date.now(); this._render(); });
-      return;
-    }
+    if (this._view === "home") this._bindFaces(root);
+    if (this._ambient) return;
     on('[data-act="back"]', () => { this._edit = null; this._go("home"); });
     on('[data-act="menu"]', () => this.dispatchEvent(new Event("hass-toggle-menu", { bubbles: true, composed: true })));
     on('[data-act="settings"]', () => this._openSettings());

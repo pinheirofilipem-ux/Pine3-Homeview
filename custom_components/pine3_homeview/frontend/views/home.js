@@ -13,17 +13,6 @@ export class HomeViewMixin {
   }
   _hint() { return this._edit ? `<div class="edhint">${t(EDIT_HINT)}</div>` : ""; }
 
-  _saverView(rooms) {
-    const w = this._wx();
-    const lit = rooms.flatMap((r) => r.ents).filter((i) => dom(i) === "light" && this._isOn(i)).length;
-    return `<div class="saver ${this._ovEnter("_saver")}" data-saver><div class="sv-in">
-      <div class="clock sv-clock">${this._clockText()}</div>
-      <div class="sv-date">${esc(this._dateText())}</div>
-      <div class="sv-meta">${w ? `<span><ha-icon icon="${WEATHER_ICON[w.cond] || "mdi:weather-partly-cloudy"}"></ha-icon>${num(Math.round(w.temp))}° ${esc(this._wxLabel(w.cond))}</span>` : ""}
-        <span><ha-icon icon="mdi:lightbulb-outline"></ha-icon>${lit ? tp(lit, "{n} luz acesa", "{n} luzes acesas") : t("Luzes apagadas")}</span></div>
-    </div></div>`;
-  }
-
   _topBar() {
     const h = this._hass, cfg = this._cfg();
     const persons = (this._model?.persons || Object.keys(h.states).filter((i) => dom(i) === "person")).map((i) => this._s(i)).filter(Boolean).slice(0, 4);

@@ -396,3 +396,19 @@ async def test_identify_buttons_hidden(hass: HomeAssistant) -> None:
     rooms = {r["name"]: r for r in build_home(hass, {"hidden": [], "hidden_rooms": [], "room_order": []})["rooms"]}
     dev = next(d for d in rooms["Sala"]["devices"] if d["id"] == mp)
     assert mute in dev["members"] and ident not in dev["members"] and pob not in dev["members"]
+
+
+async def test_faces_settings(hass: HomeAssistant, hass_ws_client) -> None:
+    await async_setup_api(hass)
+    s = hass.data["pine3_homeview"]["settings"]
+    assert s["faces"] == ["painel", "relogio"] and s["start_face"] == "painel" and s["ambient_face"] == "relogio"
+    assert s["screensaver"] == 5
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "pine3_homeview/settings", "faces": ["relogio", "painel", "mosaico"],
+                        "start_face": "relogio", "ambient_face": "relogio"})
+    msg = await ws.receive_json()
+    assert msg["success"], msg
+    assert msg["result"]["faces"] == ["relogio", "painel", "mosaico"] and msg["result"]["start_face"] == "relogio"
+    for bad_id, bad in enumerate([{"faces": []}, {"faces": ["nope"]}, {"start_face": "nope"}, {"ambient_face": 3}], start=2):
+        await ws.send_json({"id": bad_id, "type": "pine3_homeview/settings", **bad})
+        assert not (await ws.receive_json())["success"], bad
