@@ -15,7 +15,15 @@ Ecrã principal: um Samsung Galaxy Tab A7 deitado na parede, com a app
 > ser instalado ao lado do Pine3 View. Os faces chegam nas próximas fases. O plano, com maquetes, está em
 > [`docs/plano.html`](docs/plano.html).
 
-## Faces previstos
+## Faces
+Desliza para o lado no início para mudar de face (ou usa os pontos por cima da dock, ou as setas do teclado).
+O tablet abre no face inicial (o Painel) e volta a ele quando tocas na Casa da dock. Depois de algum tempo
+sem toques (5 min por defeito) aparece o face ambiente, escurecido e sem a dock; um toque acorda-o.
+Escolhe os faces, a ordem, o face inicial e o face ambiente em **Definições → Início**.
+
+Já disponíveis: **Painel** e **Relógio**. Os restantes chegam nas próximas fases.
+
+### Previstos
 - **Painel** (face inicial): o ecrã principal do Pine3 com chips de estado e Favoritos.
 - **Mosaico**: grelha 4×3 de tiles grandes (S 1×1, M 2×1, L 2×2).
 - **Mosaico+**: meteo com avisos IPMA, agenda do dia, o que está a tocar, cenas.

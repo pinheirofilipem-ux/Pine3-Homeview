@@ -13,7 +13,11 @@ export class DockMixin {
     if (nav._key !== key) {
       nav.querySelectorAll("button").forEach((b) => b.remove());
       nav.insertAdjacentHTML("beforeend", items.map(([k, icon, label]) => `<button data-dock="${k}"><ha-icon icon="${icon}"></ha-icon><span>${t(label)}</span></button>`).join(""));
-      nav.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { this._edit = null; this._go(b.dataset.dock); }));
+      nav.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+        this._edit = null;
+        if (b.dataset.dock === "home") { this._face = null; this._faceDir = 0; } // Casa: back to the start face
+        this._go(b.dataset.dock);
+      }));
       nav._key = key;
       this._blobAt = null;
     }

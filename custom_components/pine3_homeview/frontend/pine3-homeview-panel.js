@@ -22,6 +22,7 @@ import { RoomsViewMixin } from "./views/rooms.js";
 import { TilesMixin } from "./ui/tiles.js";
 import { ModalMixin } from "./ui/modal.js";
 import { BindMixin } from "./ui/bind.js";
+import { FacesMixin } from "./views/faces.js";
 
 loadFonts();
 
@@ -113,10 +114,9 @@ class Pine3HomeviewPanel extends HTMLElement {
 
   _onTick() {
     const mins = this._cfg().screensaver;
-    if (mins && !this._saver && this._view !== "settings" && !this._edit && Date.now() - this._lastActivity > mins * 60000) {
-      this._saver = true;
-      this._modal = null;
-      this._render();
+    // nobody has touched the screen for a while: the ambient face
+    if (mins && !this._ambient && this._view !== "settings" && !this._edit && Date.now() - this._lastActivity > mins * 60000) {
+      this._goAmbient();
       return;
     }
     this._updateClock();
@@ -198,7 +198,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     else if (this._view === "security") body = this._securityView(rooms);
     else if (this._view === "climate") body = this._climateView(rooms);
     else if (this._view === "house") body = houseView(this, rooms);
-    else body = this._homeView(rooms);
+    else body = this._faceView(rooms);
 
     const header = (this._narrow || this._view === "room") && this._view !== "settings" ? `<header>
       ${this._narrow ? `<div class="iconbtn" data-act="menu"><ha-icon icon="mdi:menu"></ha-icon></div>` : ""}
@@ -211,12 +211,18 @@ class Pine3HomeviewPanel extends HTMLElement {
     // keep scroll positions of inner scrollers across the redraw
     const root = this.shadowRoot;
     const scrolls = [".sheet", ".sh-main", ".sh-side", ".scenes", ".fhs", ".set-nav"].map((sel) => [sel, [...root.querySelectorAll(sel)].map((e) => [e.scrollTop, e.scrollLeft])]);
-    if (!this._modal && !this._saver) this._ovShown = null;
+    if (!this._modal && !this._ambient) this._ovShown = null;
     this._collectWatch(rooms);
     // entering another screen: the content flows in (no blur on the 3D Home, a filter would flatten it)
+    const face = this._view === "home" ? this._faceId(cfg) : "";
     const viewKey = `${this._view}:${this._view === "room" ? this._room : ""}`;
     const anim = this._animOn(cfg);
-    const vin = this._viewKey && this._viewKey !== viewKey && anim ? (this._view === "house" ? "vin flat" : "vin") : "";
+    let vin = this._viewKey && this._viewKey !== viewKey && anim ? (this._view === "house" ? "vin flat" : "vin") : "";
+    // another face on the home screen: it slides in from the side it was swiped from
+    if (!vin && anim && face && this._faceKey && this._faceKey !== face && !this._ambient && this._faceDir) vin = this._faceDir > 0 ? "fin-next" : "fin-prev";
+    this._faceKey = face;
+    this._faceDir = 0;
+    this.classList.toggle("ambient", !!this._ambient);
     this.classList.toggle("noanim", !anim);
     this.classList.toggle("lite", this._liteFx());
     if (!this._app) {
@@ -238,7 +244,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     }
     this._viewKey = viewKey;
     this._app.innerHTML = `<div class="bg" style="background:${THEMES[themeKey] || THEMES.ameixa}"></div>
-      <div class="wrap ${vin} ${this._view === "room" ? "roomv" : ""} ${cfg.layout === "list" ? "as-list" : ""} ${this._edit ? "editing" : ""}">${header}${body}</div>${editBar}${this._saver ? this._saverView(rooms) : this._modalView()}`;
+      <div class="wrap ${vin} ${this._view === "room" ? "roomv" : ""} ${face ? `faces face-${face}` : ""} ${cfg.layout === "list" ? "as-list" : ""} ${this._edit ? "editing" : ""}">${header}${body}</div>${editBar}${this._ambient ? "" : this._modalView()}`;
     for (const [sel, pos] of scrolls) root.querySelectorAll(sel).forEach((e, k) => { if (pos[k]) { e.scrollTop = pos[k][0]; e.scrollLeft = pos[k][1]; } });
     this._updateDock(cfg);
     this._packSections();
@@ -251,6 +257,6 @@ class Pine3HomeviewPanel extends HTMLElement {
   }
 }
 
-mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin);
+mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin);
 
 if (!customElements.get("pine3-homeview-panel")) customElements.define("pine3-homeview-panel", Pine3HomeviewPanel);

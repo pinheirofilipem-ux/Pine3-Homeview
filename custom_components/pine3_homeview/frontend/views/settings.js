@@ -85,7 +85,7 @@ export class SettingsViewMixin {
         })()}`;
     } else if (sec === "home") {
       const wxs = this._weather.entities(this._hass);
-      main = `<div class="panel glass"><h3 style="margin-top:0">${t("Ecrã inicial")}</h3><p>${t("O que aparece no início.")}</p><div class="opts">
+      main = `${this._facesSettings(d)}<div class="panel glass"><h3 style="margin-top:0">${t("Painel")}</h3><p>${t("O que o face Painel mostra.")}</p><div class="opts">
         ${this._toggle("show_weather", d.show_weather, t("Meteorologia"), t("Pílula com a temperatura e o estado do tempo. Toca nela para ver a previsão."))}
         ${this._choice("weather_entity", d.weather_entity, [["", t("Automático")], ...wxs.map((i) => [i, esc(this._s(i).attributes.friendly_name || i)]), ["open-meteo", "Open-Meteo"]],
           t("Fonte do tempo"), t("Automático usa a primeira entidade de tempo do Home Assistant ou, se não houver, a Open-Meteo para a localização da casa."))}
@@ -112,7 +112,7 @@ export class SettingsViewMixin {
         ${this._fsSupported() ? `<div class="opt"><div><b>${t("Ecrã inteiro")}</b><small>${t("Esconde as barras do browser. Também há um botão no topo do painel.")}</small></div><button class="pill" data-fs><ha-icon icon="mdi:fullscreen"></ha-icon>${document.fullscreenElement ? t("Sair do ecrã inteiro") : t("Ecrã inteiro")}</button></div>` : ""}
       </div></div>
       <div class="panel glass"><div class="opts">
-        ${this._choice("screensaver", d.screensaver, SAVER_STEPS.map((m) => [m, m ? t("{n} min", { n: m }) : t("Desligado")]), t("Ecrã de descanso"), t("Relógio grande e escurecido depois de algum tempo sem toques. Ideal para tablets na parede."))}
+        ${this._choice("screensaver", d.screensaver, SAVER_STEPS.map((m) => [m, m ? t("{n} min", { n: m }) : t("Desligado")]), t("Face ambiente depois de"), t("Sem toques durante este tempo, o painel mostra o face ambiente. Ideal para tablets na parede."))}
       </div></div>`;
     } else if (sec === "rooms") {
       const all = this._model?.rooms || this._localRooms();
@@ -215,6 +215,7 @@ export class SettingsViewMixin {
     const on = (sel, fn) => root.querySelectorAll(sel).forEach((el) => el.addEventListener("click", (ev) => fn(el, ev)));
     const upd = () => this._render();
     on("[data-sec]", (el) => { this._section = el.dataset.sec; upd(); });
+    if (this._section === "home") this._bindFacesSettings(root, d, upd);
     on("[data-fs]", () => this._toggleFullscreen());
     on("[data-local]", (el) => {
       const k = el.dataset.local, v = !store.get(k, false);

@@ -386,6 +386,30 @@ a.pill{color:inherit;text-decoration:none}
 .saver{position:fixed;inset:0;z-index:30;background:radial-gradient(80% 70% at 50% 40%,#22121f,#050305);display:grid;place-items:center;cursor:pointer}
 .saver.enter{animation:fade .6s}
 .sv-in{text-align:center;animation:drift 60s ease-in-out infinite alternate}
+/* ---------- faces ---------- */
+.wrap.faces{touch-action:pan-y}
+.wrap.fin-next{animation:finnext .42s cubic-bezier(.2,.8,.2,1)}
+.wrap.fin-prev{animation:finprev .42s cubic-bezier(.2,.8,.2,1)}
+@keyframes finnext{from{opacity:0;transform:translateX(56px)}to{opacity:1;transform:none}}
+@keyframes finprev{from{opacity:0;transform:translateX(-56px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.wrap.fin-next,.wrap.fin-prev{animation:none}}
+.fdots{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--dock-space,108px) - 4px);z-index:6;display:flex;gap:4px;padding:4px 6px;border-radius:99px}
+.fdots button{all:unset;cursor:pointer;width:22px;height:22px;display:grid;place-items:center}
+.fdots button::before{content:"";width:8px;height:8px;border-radius:50%;background:rgba(var(--fg),min(1,calc(.32 * var(--fg-k))));transition:background .2s,transform .2s}
+.fdots button.on::before{background:rgb(var(--fg));transform:scale(1.15)}
+.fdots button:focus-visible{outline:2px solid var(--amber);outline-offset:-2px;border-radius:50%}
+:host(.ambient) .dock,:host(.ambient) .fdots{display:none}
+.faceclock{min-height:calc(100vh - var(--dock-space,108px) - 40px);display:grid;place-items:center;text-align:center}
+.faceclock .sv-in{animation:none}
+.sv-in .sv-clock{font-size:clamp(110px,19vw,240px);line-height:1}
+.faceclock .sv-date{font-size:clamp(22px,2.8vw,34px)}
+.faceclock .sv-meta{font-size:clamp(18px,1.8vw,22px)}
+.faceclock .sv-clock{color:rgb(var(--fg))}
+.faceclock .sv-date{color:var(--muted)}
+.faceclock .sv-meta{color:var(--muted)}
+.tg.dis{opacity:.45;cursor:default}
+.list .it.soon>.ri,.list .it.soon>span{opacity:.6}
+.soonb{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--glass-hi);margin-left:6px;vertical-align:2px}
 @keyframes drift{0%{transform:translate(-4vw,-3vh)}50%{transform:translate(3vw,2vh)}100%{transform:translate(-2vw,4vh)}}
 .sv-clock{font-size:clamp(90px,18vw,220px);font-weight:200;margin:0;color:rgba(var(--fg),min(1,calc(.92 * var(--fg-k))))}
 .sv-date{font-size:clamp(18px,2.4vw,28px);color:rgba(var(--fg),min(1,calc(.6 * var(--fg-k))));margin-top:6px}

@@ -15,7 +15,15 @@ Main target: a Samsung Galaxy Tab A7 in landscape on the wall, running
 > installed next to Pine3 View. The faces arrive in the next phases. The plan, with mock-ups, is in
 > [`docs/plano.html`](docs/plano.html) (Portuguese).
 
-## Planned faces
+## Faces
+Swipe sideways on the home screen to change face (or use the dots above the dock, or the arrow keys).
+The tablet opens on the start face (Painel) and goes back to it when you tap Home in the dock. After a while
+without touches (5 min by default) it shows the ambient face, dimmed and without the dock; a touch wakes it.
+Choose the faces, their order, the start face and the ambient face in **Settings → Home**.
+
+Available now: **Painel** and **Relógio** (clock). The others arrive in the next phases.
+
+### Planned
 - **Painel** (start face): the Pine3 home screen with status chips and Favourites.
 - **Mosaico**: a 4×3 grid of large tiles (S 1×1, M 2×1, L 2×2).
 - **Mosaico+**: weather with IPMA warnings, today's calendar, what's playing, scenes.
