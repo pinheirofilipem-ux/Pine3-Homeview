@@ -1,0 +1,847 @@
+<title>Pine3 Homeview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Outfit:wght@200;300;400;500;600&display=swap">
+<style>
+/* Layout: one reading column (max 1100px); the tablet mockups break out to full column width as 5:3 screens. */
+:root{
+  --bg:#f1ecf2; --surface:#ffffff; --surface-2:#e8e1ea; --fg:#241a2a; --muted:#6c5f72; --line:rgba(36,26,42,.12);
+  --accent:#a8650a; --accent-fill:#f6b83f; --accent-ink:#2a221f; --ok:#1f8a4c; --warn:#b26b00;
+  --display:"Outfit","Figtree",system-ui,sans-serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  /* the tablet screens keep Pine3's own colours in both themes */
+  --cream:#f5efe1; --ink:#2a221f; --amber:#f6b83f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#18111c; --surface:#231929; --surface-2:#2d2133; --fg:#f3ece6; --muted:#b4a6b6; --line:rgba(255,255,255,.1);
+  --accent:#f6b83f; --accent-fill:#f6b83f; --accent-ink:#2a221f; --ok:#4cd486; --warn:#f6b83f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#18111c; --surface:#231929; --surface-2:#2d2133; --fg:#f3ece6; --muted:#b4a6b6; --line:rgba(255,255,255,.1);
+  --accent:#f6b83f; --accent-fill:#f6b83f; --accent-ink:#2a221f; --ok:#4cd486; --warn:#f6b83f; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.page{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px;display:flex;flex-direction:column;gap:64px}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,7vw,68px);font-weight:300;letter-spacing:-.02em}
+h2{font-size:clamp(28px,4vw,38px);font-weight:300;letter-spacing:-.01em}
+h3{font-size:20px;font-weight:500}
+p{margin:0;max-width:68ch}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:19px;color:var(--muted);max-width:62ch}
+section{display:flex;flex-direction:column;gap:20px}
+.sec-head{display:flex;flex-direction:column;gap:10px}
+.muted{color:var(--muted)}
+a{color:var(--accent)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:var(--surface-2);padding:1px 6px;border-radius:6px}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:18px}
+.decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
+.dec{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.dec b{font-family:var(--display);font-weight:500;font-size:18px}
+.dec span{font-size:14px;color:var(--muted)}
+
+/* references */
+.refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.ref{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ref .who{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ref .tag{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+.ref ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.ref .take{font-size:14px;border-top:1px solid var(--line);padding-top:10px;color:var(--muted)}
+.ref .take b{color:var(--fg);font-weight:600}
+
+/* flow */
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;counter-reset:st}
+.st{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px 20px 18px;display:flex;flex-direction:column;gap:8px}
+.st::before{counter-increment:st;content:counter(st);font-family:var(--display);font-size:13px;font-weight:600;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-fill);color:var(--accent-ink)}
+.st .dist{font-size:13px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.st p{font-size:15px}
+
+/* ===== tablet viewer ===== */
+.viewer{display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{all:unset;cursor:pointer;flex:none;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:15px}
+.tab[aria-selected="true"]{background:var(--accent-fill);color:var(--accent-ink);border-color:transparent}
+.tab:focus-visible,.nav:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.device{background:#0d0a0f;border-radius:clamp(14px,2.6vw,30px);padding:clamp(8px,1.6vw,18px);box-shadow:0 30px 60px -30px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.06);position:relative}
+.screen{container-type:inline-size;aspect-ratio:5/3;max-width:100%;border-radius:clamp(6px,1vw,12px);overflow:hidden;position:relative;color:#fff;font-family:var(--body);touch-action:pan-y}
+.face{position:absolute;inset:0;display:none}
+.face.on{display:block;animation:fin .35s ease}
+@keyframes fin{from{opacity:.2;transform:translateX(1.5%)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.face.on{animation:none}}
+.vfoot{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.vfoot .cap{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.vfoot .cap h3{font-size:22px}
+.vfoot .cap p{font-size:15px;color:var(--muted)}
+.vfoot .src{font-size:13px;color:var(--muted)}
+.navs{display:flex;gap:8px;align-items:center}
+.nav{all:unset;cursor:pointer;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface)}
+.dots{display:flex;gap:6px;position:absolute;left:50%;bottom:1.6cqw;transform:translateX(-50%);z-index:5}
+.dots i{width:.7cqw;height:.7cqw;border-radius:50%;background:rgba(255,255,255,.35)}
+.dots i.on{background:#fff}
+
+/* shared tablet atoms, all sized in cqw so the mockup scales with the screen (1334px wide on the Tab A7 ≈ 100cqw) */
+.s-pad{position:absolute;inset:0;padding:2.4cqw}
+.t{border-radius:2.1cqw;padding:1.6cqw;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;
+   background:linear-gradient(150deg,rgba(255,255,255,.16),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+.t.on{background:var(--cream);color:var(--ink);border-color:transparent;box-shadow:0 1.2cqw 2.4cqw -1.2cqw rgba(0,0,0,.45)}
+.t .ic{width:3.4cqw;height:3.4cqw;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);flex:none}
+.t.on .ic{background:var(--amber);color:var(--ink)}
+.t .ic svg{width:1.9cqw;height:1.9cqw}
+.t .nm{font-family:var(--display);font-weight:500;font-size:1.75cqw;line-height:1.15;margin-top:auto}
+.t .sv{font-size:1.35cqw;opacity:.72;line-height:1.3}
+.t.on .sv{opacity:.62}
+.lbl{font-size:1.05cqw;font-weight:600;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+svg.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* backgrounds (Pine3 palettes) */
+.bg-amber{background:radial-gradient(120% 90% at 85% 10%,#f9c46a 0%,#e88b1c 40%,#b9520f 75%,#7a2c0b 100%)}
+.bg-plum{background:radial-gradient(90% 80% at 50% 35%,#6d3a62 0%,#3b2038 50%,#1d1220 100%)}
+.bg-forest{background:radial-gradient(80% 70% at 20% 20%,#2f6b56 0%,#183a33 50%,#0e1d1c 100%)}
+.bg-night{background:#000}
+.bg-flow{background:radial-gradient(70% 70% at 50% 45%,#86a8b8 0%,#8c86c9 55%,#7b6bc0 100%)}
+
+/* face 1: Mosaico */
+.mos{display:grid;height:100%;gap:1.4cqw;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);
+  grid-template-areas:"th th ck dr" "th th sc lt" "vc vc bl lp"}
+.thermo{grid-area:th;align-items:center;justify-content:space-between;padding:2.2cqw}
+.thermo .big{font-family:var(--display);font-weight:300;font-size:13cqw;line-height:1;letter-spacing:-.03em;margin-top:2cqw}
+.thermo .big sup{font-size:4cqw;vertical-align:top;line-height:1.6}
+.thermo .row{display:flex;align-items:center;justify-content:space-between;width:100%}
+.thermo .row svg{width:2.6cqw;height:2.6cqw}
+.thermo .mid{text-align:center}
+.thermo .mid .nm{font-size:2cqw;margin:0}
+.thermo .mode{display:inline-flex;gap:.6cqw;align-items:center;font-size:1.25cqw;font-weight:600;background:rgba(42,34,31,.08);padding:.4cqw 1cqw;border-radius:99px;margin-top:.6cqw}
+.thermo .mode i{width:.8cqw;height:.8cqw;border-radius:50%;background:#e8712b}
+.ck{grid-area:ck;display:grid;place-items:center}
+.ck svg{width:15.5cqw;height:15.5cqw}
+.vac .bar{height:.7cqw;border-radius:99px;background:rgba(255,255,255,.22);margin-top:1cqw;overflow:hidden}
+.vac .bar i{display:block;height:100%;width:42%;background:#4cd486}
+.vac .top{display:flex;justify-content:space-between;align-items:center}
+.pw{width:3.6cqw;height:3.6cqw;border-radius:50%;display:grid;place-items:center;background:rgba(42,34,31,.08)}
+.t:not(.on) .pw{background:rgba(255,255,255,.14)}
+.pw svg{width:1.8cqw;height:1.8cqw}
+.dotsr{display:flex;gap:.5cqw;margin-top:.7cqw}
+.dotsr b{width:.8cqw;height:.8cqw;border-radius:50%;background:var(--amber)}
+.dotsr b.off{background:rgba(42,34,31,.18)}
+
+/* face 2: Mosaico+ */
+.mosp{display:grid;height:100%;gap:1.4cqw;grid-template-columns:repeat(4,1fr);grid-template-rows:1.25fr .85fr .9fr;
+  grid-template-areas:"we we cam cam" "ag ag cam cam" "s1 s2 lt lk"}
+.we{grid-area:we;gap:.6cqw}
+.we .now{display:flex;align-items:center;gap:1.4cqw}
+.we .now svg{width:4cqw;height:4cqw;color:var(--amber)}
+.we .tmp{font-family:var(--display);font-weight:300;font-size:4.4cqw;line-height:1}
+.we .hrs{display:flex;justify-content:space-between;margin-top:auto;font-size:1.2cqw;text-align:center}
+.we .hrs div{display:flex;flex-direction:column;gap:.2cqw}
+.we .hrs b{font-weight:600;font-size:1.35cqw}
+.we .hrs em{font-style:normal;color:#9fd3ff}
+.ipma{display:flex;align-items:center;gap:.8cqw;background:rgba(246,184,63,.22);border:1px solid rgba(246,184,63,.6);border-radius:1cqw;padding:.5cqw 1cqw;font-size:1.2cqw;font-weight:600}
+.ipma i{width:1cqw;height:1cqw;border-radius:50%;background:var(--amber);flex:none}
+.ag{grid-area:ag;flex-direction:row;gap:1.6cqw}
+.ag .day{display:flex;flex-direction:column;flex:none;width:7cqw}
+.ag .day small{color:#ff8a7a;font-weight:700;font-size:1.1cqw;letter-spacing:.1em;text-transform:uppercase}
+.ag .day b{font-family:var(--display);font-weight:300;font-size:5.6cqw;line-height:1}
+.ag ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.8cqw;flex:1;min-width:0}
+.ag li{border-left:.3cqw solid var(--amber);padding-left:.9cqw;font-size:1.25cqw;line-height:1.25}
+.ag li span{display:block;opacity:.65;font-size:1.15cqw}
+.cam{grid-area:cam;padding:0;background:linear-gradient(180deg,#5d6a74 0%,#9aa3a6 45%,#5b5246 46%,#3c342c 100%)}
+.cam .scene{position:absolute;inset:0}
+.cam .live{position:absolute;top:1.4cqw;left:1.4cqw;display:flex;gap:.6cqw;align-items:center;background:rgba(0,0,0,.45);padding:.4cqw 1cqw;border-radius:99px;font-size:1.15cqw;font-weight:700;letter-spacing:.08em}
+.cam .live i{width:.8cqw;height:.8cqw;border-radius:50%;background:#ff453a}
+.cam .cap{position:absolute;left:1.4cqw;bottom:1.4cqw;background:rgba(0,0,0,.45);padding:.5cqw 1.1cqw;border-radius:1cqw;font-size:1.35cqw;font-weight:600}
+.cam .btns{position:absolute;right:1.4cqw;bottom:1.4cqw;display:flex;gap:.8cqw}
+.cam .btns span{width:4cqw;height:4cqw;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.25);backdrop-filter:none}
+.cam .btns span.g{background:#34c759}
+.cam .btns svg{width:2cqw;height:2cqw}
+.scn{align-items:center;justify-content:center;text-align:center;gap:.6cqw}
+.scn svg{width:3.4cqw;height:3.4cqw}
+.scn .nm{margin:0;font-size:1.7cqw}
+
+.play{grid-area:cam;flex-direction:row;gap:2cqw;align-items:stretch;padding:2cqw}
+.play .art{width:42%;aspect-ratio:1;border-radius:1.6cqw;align-self:center;background:linear-gradient(180deg,#f3a35f 0%,#d96d6d 45%,#5c4a8a 70%,#2e2a54 100%);position:relative;overflow:hidden;flex:none}
+.play .art::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-30%;height:60%;background:#251f45;border-radius:50% 50% 0 0}
+.play .meta{display:flex;flex-direction:column;gap:.5cqw;min-width:0;flex:1}
+.play .meta b{font-family:var(--display);font-weight:500;font-size:2.4cqw;line-height:1.1;margin-top:auto}
+.play .prog{height:.6cqw;border-radius:99px;background:rgba(255,255,255,.2);margin-top:1cqw}
+.play .prog i{display:block;height:100%;width:35%;border-radius:99px;background:#fff}
+.play .ctl{display:flex;align-items:center;gap:1.6cqw;margin-top:1.2cqw}
+.play .ctl span{width:4.4cqw;height:4.4cqw;border-radius:50%;display:grid;place-items:center;background:var(--cream);color:var(--ink)}
+.play .ctl svg{width:2cqw;height:2cqw}
+.play .ctl em{font-style:normal;font-size:1.3cqw;opacity:.7}
+
+/* face 3: Painel (Pine3 + Apple Home) */
+.pan{display:grid;height:100%;grid-template-columns:31% 1fr;gap:2.4cqw}
+.pan .left{display:flex;flex-direction:column;gap:1.2cqw;padding-right:2.4cqw;border-right:1px solid rgba(255,255,255,.14);min-width:0}
+.pan .clock{font-family:var(--display);font-weight:200;font-size:10.5cqw;line-height:.95;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.pan .status{font-family:var(--display);font-weight:300;font-size:2.9cqw;line-height:1.1;margin-top:1cqw}
+.pan .sub{font-size:1.35cqw;opacity:.7}
+.pills{display:flex;gap:.8cqw;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:.6cqw;height:3.6cqw;padding:0 1.5cqw;border-radius:99px;font-weight:600;font-size:1.3cqw;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16)}
+.pill.solid{background:var(--cream);color:var(--ink);border-color:transparent}
+.pill svg{width:1.6cqw;height:1.6cqw}
+.wmini{margin-top:auto;display:flex;align-items:center;gap:1.2cqw;padding:1.2cqw 1.4cqw;border-radius:1.8cqw;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14)}
+.wmini svg{width:3.6cqw;height:3.6cqw;color:var(--amber)}
+.wmini b{font-family:var(--display);font-weight:300;font-size:3.2cqw;line-height:1}
+.wmini span{font-size:1.2cqw;opacity:.75;display:block}
+.pan .right{display:flex;flex-direction:column;gap:1.3cqw;min-width:0}
+.chips{display:flex;gap:.9cqw}
+.chip{display:flex;align-items:center;gap:.8cqw;padding:.8cqw 1.3cqw .8cqw .8cqw;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);min-width:0}
+.chip .ci{width:2.8cqw;height:2.8cqw;border-radius:50%;display:grid;place-items:center;flex:none}
+.chip .ci svg{width:1.6cqw;height:1.6cqw}
+.chip b{display:block;font-size:1.25cqw;font-weight:600;line-height:1.1}
+.chip span{display:block;font-size:1.1cqw;opacity:.7;line-height:1.2;white-space:nowrap}
+.favs{display:grid;grid-template-columns:repeat(3,1fr);gap:1cqw}
+.ft{flex-direction:row;align-items:center;gap:1.1cqw;padding:1.1cqw;border-radius:1.8cqw}
+.ft .nm{margin:0;font-size:1.45cqw}
+.ft .sv{font-size:1.2cqw}
+.ft .ic{width:3.2cqw;height:3.2cqw}
+.rooms{display:grid;grid-template-columns:repeat(4,1fr);gap:1cqw;flex:1;min-height:0}
+.rm{gap:.3cqw;padding:1.3cqw}
+.rm .ic{width:3cqw;height:3cqw}
+.rm .nm{font-size:1.6cqw}
+.rm .ft2{display:flex;justify-content:space-between;align-items:center;font-size:1.2cqw}
+
+/* face 4: Relógio e agenda */
+.cal{display:grid;height:100%;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto 1fr;gap:2cqw 3cqw;padding:3cqw}
+.cal .date{grid-row:1}
+.cal .date .dw{font-family:var(--display);font-weight:600;font-size:4.6cqw;line-height:1}
+.cal .date .dw span{color:#f6c860}
+.cal .date .dn{font-family:var(--display);font-weight:500;font-size:15cqw;line-height:.9;letter-spacing:-.04em}
+.month{grid-row:2;align-self:end}
+.month .mh{color:#f6c860;font-weight:700;font-size:1.3cqw;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1cqw}
+.month .g{display:grid;grid-template-columns:repeat(7,1fr);gap:.5cqw 0;text-align:center;font-size:1.45cqw;font-variant-numeric:tabular-nums}
+.month .g .h{opacity:.55;font-size:1.15cqw}
+.month .g .p{opacity:.5}
+.month .g .t0{background:#f6c860;color:#000;border-radius:50%;font-weight:700;width:2.6cqw;height:2.6cqw;display:grid;place-items:center;margin:auto}
+.np{display:flex;flex-direction:column;gap:.6cqw}
+.np .art{width:12cqw;height:12cqw;border-radius:1.4cqw;background:linear-gradient(180deg,#f3a35f 0%,#d96d6d 45%,#5c4a8a 70%,#2e2a54 100%);position:relative;overflow:hidden}
+.np .art::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-30%;height:60%;background:#251f45;border-radius:50% 50% 0 0}
+.np b{font-family:var(--display);font-weight:600;font-size:2cqw;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.np span{opacity:.6;font-size:1.6cqw}
+.np .pause{display:inline-flex;align-self:flex-start;align-items:center;gap:.6cqw;padding:.7cqw 1.6cqw;border-radius:99px;background:rgba(255,255,255,.14);font-weight:600;font-size:1.6cqw}
+.sun{grid-row:2;align-self:end;display:flex;flex-direction:column;gap:.4cqw}
+.sun .h{color:#f6c860;font-weight:700;font-size:2.2cqw;display:flex;align-items:center;gap:.8cqw;font-family:var(--display)}
+.sun .h svg{width:2.6cqw;height:2.6cqw}
+.sun .v{font-family:var(--display);font-weight:300;font-size:5.4cqw;line-height:1.1;font-variant-numeric:tabular-nums}
+.sun .s{font-size:1.6cqw;opacity:.85;margin-top:1.4cqw}
+.an{display:grid;place-items:center}
+.an svg{width:21cqw;height:21cqw}
+.wx{grid-row:2;align-self:end}
+.wx .h{color:#f6c860;font-weight:700;font-size:2.2cqw;font-family:var(--display)}
+.wx .v{font-family:var(--display);font-weight:300;font-size:9cqw;line-height:1}
+.wx .s{font-size:1.6cqw;line-height:1.3}
+
+/* face 5: Fluxo */
+.fx canvas{position:absolute;inset:0;width:100%;height:100%}
+.fx .tm{position:absolute;right:3cqw;bottom:3cqw;text-align:right;color:rgba(255,255,255,.92)}
+.fx .tm b{font-family:var(--display);font-weight:300;font-size:6cqw;line-height:1;display:block;font-variant-numeric:tabular-nums}
+.fx .tm span{font-size:1.5cqw;opacity:.85}
+
+/* specs & phases */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.box ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;font-size:15px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:15px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-variant-numeric:tabular-nums}
+.sizes{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.sz{border-radius:12px;background:var(--surface-2);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:flex-end;padding:8px 10px;font-size:13px;font-weight:600}
+.sz span{font-weight:400;color:var(--muted);font-size:12px}
+
+.arch{overflow-x:auto}
+.arch svg{min-width:640px;width:100%;height:auto;display:block}
+.arch text{fill:var(--fg);font-family:var(--body);font-size:13px}
+.arch .sm{fill:var(--muted);font-size:11.5px}
+.arch .bx{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.arch .bx.new{stroke:var(--accent);stroke-width:1.6}
+.arch .ln{stroke:var(--muted);stroke-width:1.3;fill:none}
+.arch .hd{font-family:var(--display);font-weight:500;font-size:14px}
+
+.phases{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.ph{display:grid;grid-template-columns:72px 1fr auto;gap:8px 20px;padding:18px 0;border-bottom:1px solid var(--line);align-items:start}
+.ph .n{font-family:var(--display);font-size:28px;font-weight:300;color:var(--muted);line-height:1}
+.ph .body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ph .body p{font-size:15px;color:var(--muted)}
+.ph .body ul{margin:0;padding-left:18px;font-size:15px;display:flex;flex-direction:column;gap:4px}
+.ph .meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.badge{font-size:12px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.badge.mvp{background:var(--accent-fill);color:var(--accent-ink)}
+.badge.later{background:var(--surface-2);color:var(--muted)}
+.size{font-size:12px;color:var(--muted);font-weight:600}
+@media (max-width:640px){.ph{grid-template-columns:44px 1fr}.ph .meta{grid-column:2;flex-direction:row;align-items:center}}
+
+.risks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.risk{border-left:3px solid var(--warn);background:var(--surface);border-radius:0 16px 16px 0;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.risk b{font-weight:600}
+.risk span{font-size:14.5px;color:var(--muted)}
+.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px}
+.qs li{padding-left:4px}
+.qs li b{font-weight:600}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-fan" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.8"/><path d="M12 10.2c-1-3.5.5-6.7 3-6.7 2.2 0 2.6 3.3-1.3 6.2M13.8 12.6c3.5-.9 6.6.7 6.5 3.2-.1 2.2-3.4 2.5-6.2-1.4M10.6 13.4c-2.6 2.6-6.1 2.8-7.2.6-1-2 1.7-3.9 6.1-2.3"/></symbol>
+    <symbol id="i-blinds" viewBox="0 0 24 24"><path d="M4 4h16M5 4v12h14V4M5 8h14M5 12h14M12 16v3"/><circle cx="12" cy="20" r="1"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M10 3l1.6 4.4L16 9l-4.4 1.6L10 15l-1.6-4.4L4 9l4.4-1.6zM17.5 13l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+    <symbol id="i-lamp" viewBox="0 0 24 24"><path d="M8 3h8l3 8H5zM12 11v8M8 21h8"/></symbol>
+    <symbol id="i-vac" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M8 6.5h8"/></symbol>
+    <symbol id="i-therm" viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v7"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8.2-7.5 9.5-4.3-1.3-7.5-5-7.5-9.5V6z"/><path d="m8.8 12 2.2 2.2 4.4-4.4"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8M6.4 6.6a8 8 0 1 0 11.2 0"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-cloudsun" viewBox="0 0 24 24"><path d="M8 3v1.5M3.8 5.8l1 1M2.5 10H4M12.5 5.8l-1 1"/><path d="M5.6 12.4A3.5 3.5 0 1 1 11.6 9"/><path d="M8.5 20h9a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.2A3 3 0 0 0 8.5 20z"/></symbol>
+    <symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 4v4M5.6 10.6l1.4 1.4M18.4 10.6 17 12M2.5 14.5h2M19.5 14.5h2"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+    <symbol id="i-door" viewBox="0 0 24 24"><path d="M6 21V4h12v17M3.5 21h17"/><circle cx="14.5" cy="12.5" r=".8"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+    <symbol id="i-plant" viewBox="0 0 24 24"><path d="M12 21v-9M12 12c0-4 3-6 7-6 0 4-3 6-7 6zM12 15c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/></symbol>
+  </defs>
+</svg>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="eyebrow">Plano de projeto · novembro 2026</div>
+    <h1>Pine3 Homeview</h1>
+    <p class="lede">Um painel de parede para Home Assistant que junta os "faces" do Apple HomeView com o que o Pine3 View já faz bem: a casa construída sozinha a partir das áreas, os cartões de dispositivo e a Casa 3D. Pensado para um Samsung Galaxy Tab A7 deitado na parede.</p>
+    <div class="decisions" aria-label="Decisões já tomadas">
+      <div class="dec"><span>Repositório</span><b>Novo, separado</b><span><code>Pine3-Homeview</code>, domínio <code>pine3_homeview</code></span></div>
+      <div class="dec"><span>Ecrã principal</span><b>Galaxy Tab A7</b><span>10,4", 2000×1200, horizontal</span></div>
+      <div class="dec"><span>Base de código</span><b>Pine3 View 0.22.2</b><span>Backend reaproveitado tal como está</span></div>
+      <div class="dec"><span>Face inicial</span><b>Painel</b><span>O ecrã do Pine3, com chips e Favoritos</span></div>
+      <div class="dec"><span>App no tablet</span><b>Pine3 Wallpanel</b><span>A tua app <code>wallpanel-android</code></span></div>
+      <div class="dec"><span>Referências</span><b>3 produtos</b><span>Apple HomeView, Rehome, HomeDeck</span></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Referências</div>
+      <h2>O que tirar de cada um</h2>
+      <p class="muted">Inspiração de layout e comportamento. Nenhum código, imagem ou nome de produto é copiado.</p>
+    </div>
+    <div class="refs">
+      <article class="ref">
+        <div class="who"><h3>Apple HomeView</h3><span class="tag">Apple · 13 nov</span></div>
+        <ul>
+          <li>Ecrã de 7" com "faces" que se trocam: Fotos, Home Modular, câmaras, calendário, meteo e o Flow, que reage ao movimento.</li>
+          <li>Faces dinâmicas que mudam ao longo do dia.</li>
+          <li>Mostra mais informação à medida que a pessoa se aproxima.</li>
+          <li>Até nove câmaras em simultâneo.</li>
+          <li>Brilho de 500 nits até 0,3 nits para a mesa de cabeceira.</li>
+        </ul>
+        <p class="take"><b>Trazemos:</b> o modelo de faces, a proximidade e o ciclo dia/noite.</p>
+      </article>
+      <article class="ref">
+        <div class="who"><h3>Rehome</h3><span class="tag">userehome.com</span></div>
+        <ul>
+          <li>Dez faces para iPads antigos, cada uma "com uma só função".</li>
+          <li>Tiles grandes para ler do outro lado da sala.</li>
+          <li>Tiles creme quando ligadas, vidro colorido quando desligadas.</li>
+          <li>Corre no Safari, sem instalar nada no iPad.</li>
+          <li>O iPad não consegue alterar o Home Assistant.</li>
+        </ul>
+        <p class="take"><b>Trazemos:</b> a legibilidade à distância e o cuidado com hardware fraco.</p>
+      </article>
+      <article class="ref">
+        <div class="who"><h3>HomeDeck</h3><span class="tag">homedeck.pro</span></div>
+        <ul>
+          <li>Monta o painel a partir das áreas e dispositivos, sem YAML. A mesma ideia do Pine3.</li>
+          <li>Layouts Grade, Lateral, Lista e Foco (uma divisão por ecrã, a deslizar).</li>
+          <li>Agenda e lembretes ao lado do relógio, cartão "Hoje".</li>
+          <li>Cards duplos com mais controlos, edição com tudo a "balançar".</li>
+          <li>Fundos que seguem as luzes da casa, datas especiais.</li>
+        </ul>
+        <p class="take"><b>Trazemos:</b> a agenda e os lembretes, e o deslizar entre ecrãs.</p>
+      </article>
+      <article class="ref">
+        <div class="who"><h3>Pine3 View</h3><span class="tag">a nossa base</span></div>
+        <ul>
+          <li>A casa constrói-se sozinha: áreas, dispositivos e entidades.</li>
+          <li>Casa 3D e editor de planta, com modo "imagem 3D" para tablets fracos.</li>
+          <li>Cartões completos: clima, aspirador, TV, purificador.</li>
+          <li>Meteo com avisos IPMA, cenas, protetor de ecrã, quiosque.</li>
+          <li>Fontes Outfit e Figtree e as paletas ambiente.</li>
+        </ul>
+        <p class="take"><b>Mantemos:</b> o backend, os cartões, a 3D e a identidade visual.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Conceito</div>
+      <h2>Faces que se leem de longe e se usam de perto</h2>
+      <p class="muted">Em vez de um único ecrã principal, o tablet mostra um "face" de cada vez. Desliza-se para o lado para mudar. Cada face tem uma função, e o comportamento muda com a distância de quem está à frente.</p>
+    </div>
+    <div class="flow">
+      <div class="st"><span class="dist">Ninguém por perto</span><h3>Ambiente</h3><p>Ecrã escurecido com relógio, fotos ou o Fluxo. De noite desce quase ao mínimo de brilho.</p></div>
+      <div class="st"><span class="dist">Alguém a aproximar-se</span><h3>Olhar</h3><p>O face acorda e mostra o essencial em letras grandes: estado da casa, meteo, próximo evento.</p></div>
+      <div class="st"><span class="dist">Toque</span><h3>Controlo</h3><p>Tiles com ação direta. Toque longo abre o cartão completo do Pine3 (brilho, cor, modos).</p></div>
+      <div class="st"><span class="dist">Mais detalhe</span><h3>Divisão e 3D</h3><p>O ecrã da divisão e a Casa 3D do Pine3 continuam lá, a um toque do face.</p></div>
+    </div>
+  </section>
+
+  <section class="viewer" id="faces">
+    <div class="sec-head">
+      <div class="eyebrow">Como fica</div>
+      <h2>Os faces no Tab A7</h2>
+      <p class="muted">Maquetes à proporção do ecrã (5:3) com uma casa de exemplo. Desliza na imagem ou usa as setas.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Faces">
+      <button class="tab" role="tab" id="tab-0" aria-selected="true" data-i="0">Mosaico</button>
+      <button class="tab" role="tab" id="tab-1" aria-selected="false" data-i="1">Mosaico+</button>
+      <button class="tab" role="tab" id="tab-2" aria-selected="false" data-i="2">Painel</button>
+      <button class="tab" role="tab" id="tab-3" aria-selected="false" data-i="3">Relógio e agenda</button>
+      <button class="tab" role="tab" id="tab-4" aria-selected="false" data-i="4">Fluxo</button>
+    </div>
+
+    <div class="device">
+      <div class="screen" id="screen">
+
+        <!-- 1 Mosaico -->
+        <div class="face bg-amber on" role="tabpanel" aria-labelledby="tab-0">
+          <div class="s-pad">
+            <div class="mos">
+              <div class="t on thermo">
+                <div class="row"><span class="lbl" style="opacity:.55">Sala</span><span class="mode"><i></i>A aquecer · 20,5°</span></div>
+                <div class="big">22<sup>°</sup></div>
+                <div class="row">
+                  <svg class="i"><use href="#i-down"/></svg>
+                  <div class="mid"><div class="nm">Ar condicionado</div><div class="sv">Sala · 20,5° agora</div></div>
+                  <svg class="i"><use href="#i-up"/></svg>
+                </div>
+              </div>
+              <div class="ck"><svg viewBox="0 0 100 100" class="analog" aria-label="Relógio"></svg></div>
+              <div class="t" style="grid-area:dr">
+                <div class="ic"><svg class="i"><use href="#i-lock"/></svg></div>
+                <div class="nm">Porta de entrada</div><div class="sv">Entrada · Trancada</div>
+              </div>
+              <div class="t" style="grid-area:sc">
+                <div class="ic"><svg class="i"><use href="#i-spark"/></svg></div>
+                <div class="nm">Chegar a casa</div><div class="sv">Cena</div>
+              </div>
+              <div class="t on" style="grid-area:lt">
+                <div style="display:flex;justify-content:space-between"><div class="ic"><svg class="i"><use href="#i-bulb"/></svg></div><div class="pw"><svg class="i"><use href="#i-power"/></svg></div></div>
+                <div class="nm">Teto</div><div class="sv">Cozinha · 71%</div>
+              </div>
+              <div class="t vac" style="grid-area:vc">
+                <div class="top"><div class="ic" style="background:#34c759"><svg class="i"><use href="#i-vac"/></svg></div><span class="lbl">Aspirador</span></div>
+                <div class="nm">A limpar a Sala</div><div class="sv">Roborock S8 · 42% · 18 min</div>
+                <div class="bar"><i></i></div>
+              </div>
+              <div class="t" style="grid-area:bl">
+                <div class="ic"><svg class="i"><use href="#i-blinds"/></svg></div>
+                <div class="nm">Estores</div><div class="sv">Quarto · Fechados</div>
+              </div>
+              <div class="t on" style="grid-area:lp">
+                <div class="ic"><svg class="i"><use href="#i-lamp"/></svg></div>
+                <div class="nm">Candeeiro</div><div class="sv">Quarto · 35%</div>
+                <div class="dotsr"><b></b><b class="off"></b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Mosaico+ -->
+        <div class="face bg-plum" role="tabpanel" aria-labelledby="tab-1">
+          <div class="s-pad">
+            <div class="mosp">
+              <div class="t we">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div class="now"><svg class="i"><use href="#i-cloudsun"/></svg><div><div class="tmp">18°</div><div class="sv">Pouco nublado · Máx. 21° Mín. 13°</div></div></div>
+                  <span class="lbl">Casa</span>
+                </div>
+                <div class="ipma"><i></i>Aviso amarelo · Agitação marítima, a partir das 13:45</div>
+                <div class="hrs">
+                  <div><span>Agora</span><b>18°</b><em>20%</em></div>
+                  <div><span>13:00</span><b>19°</b><em>60%</em></div>
+                  <div><span>14:00</span><b>19°</b><em>30%</em></div>
+                  <div><span>15:00</span><b>20°</b><em>10%</em></div>
+                  <div><span>16:00</span><b>19°</b><em>10%</em></div>
+                </div>
+              </div>
+              <div class="t ag">
+                <div class="day"><small class="wd">Quarta</small><b class="dnum">11</b></div>
+                <ul>
+                  <li>Reunião de condomínio<span>18:30 – 19:30</span></li>
+                  <li>Natação da Ana<span>17:00 – 18:00</span></li>
+                  <li>Comprar pilhas para o comando<span>Lembrete · hoje</span></li>
+                </ul>
+              </div>
+              <div class="t play">
+                <div class="art"></div>
+                <div class="meta">
+                  <span class="lbl">A tocar · HomePod da Sala</span>
+                  <b>Manhã de sol</b><span class="sv">Trio Atlântico</span>
+                  <div class="prog"><i></i></div>
+                  <div class="ctl"><span><svg class="i"><use href="#i-pause"/></svg></span><em>Volume 35%</em></div>
+                </div>
+              </div>
+              <div class="t scn"><svg class="i"><use href="#i-home"/></svg><div class="nm">Chegar a casa</div><div class="sv">Cena</div></div>
+              <div class="t scn on"><svg class="i" style="color:#d4880c"><use href="#i-spark"/></svg><div class="nm">Jantar</div><div class="sv">Cena · ativa</div></div>
+              <div class="t on"><div class="ic"><svg class="i"><use href="#i-bulb"/></svg></div><div class="nm">Fita LED</div><div class="sv">Sala · 35%</div></div>
+              <div class="t"><div class="ic"><svg class="i"><use href="#i-lock"/></svg></div><div class="nm">Garagem</div><div class="sv">Fechada</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Painel -->
+        <div class="face bg-forest" role="tabpanel" aria-labelledby="tab-2">
+          <div class="s-pad">
+            <div class="pan">
+              <div class="left">
+                <div class="lbl dlong">Quarta-feira, 11 de novembro</div>
+                <div class="clock dclock">11:45</div>
+                <div class="status">5 luzes acesas</div>
+                <div class="sub">Também ligados: Máquina de café, Purificador</div>
+                <div class="pills">
+                  <span class="pill"><svg class="i"><use href="#i-bulb"/></svg>Acender</span>
+                  <span class="pill solid"><svg class="i"><use href="#i-power"/></svg>Apagar</span>
+                </div>
+                <div class="wmini"><svg class="i"><use href="#i-cloudsun"/></svg><div><b>18°</b><span>Pouco nublado · 21° / 13°</span></div></div>
+              </div>
+              <div class="right">
+                <div class="chips">
+                  <div class="chip"><span class="ci" style="background:#34c759"><svg class="i"><use href="#i-therm"/></svg></span><div><b>Clima</b><span>19–22°</span></div></div>
+                  <div class="chip"><span class="ci" style="background:var(--amber);color:var(--ink)"><svg class="i"><use href="#i-bulb"/></svg></span><div><b>Luzes</b><span>5 acesas</span></div></div>
+                  <div class="chip"><span class="ci" style="background:#5a8dee"><svg class="i"><use href="#i-shield"/></svg></span><div><b>Segurança</b><span>Tudo seguro</span></div></div>
+                  <div class="chip"><span class="ci" style="background:#2fb9a8"><svg class="i"><use href="#i-plant"/></svg></span><div><b>Ar</b><span>PM2.5 11</span></div></div>
+                </div>
+                <div class="lbl">Favoritos</div>
+                <div class="favs">
+                  <div class="t on ft"><div class="ic"><svg class="i"><use href="#i-bulb"/></svg></div><div><div class="nm">Teto</div><div class="sv">Sala · 71%</div></div></div>
+                  <div class="t ft"><div class="ic"><svg class="i"><use href="#i-lock"/></svg></div><div><div class="nm">Porta</div><div class="sv">Trancada</div></div></div>
+                  <div class="t on ft"><div class="ic"><svg class="i"><use href="#i-therm"/></svg></div><div><div class="nm">Ar condicionado</div><div class="sv">Aquecer · 22°</div></div></div>
+                  <div class="t ft"><div class="ic"><svg class="i"><use href="#i-blinds"/></svg></div><div><div class="nm">Estore</div><div class="sv">70% aberto</div></div></div>
+                  <div class="t on ft"><div class="ic"><svg class="i"><use href="#i-fan"/></svg></div><div><div class="nm">Purificador</div><div class="sv">Auto · 64%</div></div></div>
+                  <div class="t ft"><div class="ic"><svg class="i"><use href="#i-spark"/></svg></div><div><div class="nm">Boa noite</div><div class="sv">Cena</div></div></div>
+                </div>
+                <div class="lbl">Divisões</div>
+                <div class="rooms">
+                  <div class="t on rm"><div class="ic"><svg class="i"><use href="#i-home"/></svg></div><div class="nm">Sala</div><div class="ft2"><span class="sv">3 de 5 ligados</span><span>21°</span></div></div>
+                  <div class="t on rm"><div class="ic"><svg class="i"><use href="#i-spark"/></svg></div><div class="nm">Cozinha</div><div class="ft2"><span class="sv">2 de 2 ligados</span><span>22°</span></div></div>
+                  <div class="t rm"><div class="ic"><svg class="i"><use href="#i-lamp"/></svg></div><div class="nm">Quarto</div><div class="ft2"><span class="sv">Desligado</span><span>19°</span></div></div>
+                  <div class="t rm"><div class="ic"><svg class="i"><use href="#i-door"/></svg></div><div class="nm">Escritório</div><div class="ft2"><span class="sv">Desligado</span><span>20°</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Relógio e agenda -->
+        <div class="face bg-night" role="tabpanel" aria-labelledby="tab-3">
+          <div class="cal">
+            <div class="date"><div class="dw"><span class="wd3">Qua</span> <span style="color:#9b9b9b" class="mo3">Nov</span></div><div class="dn dnum">11</div></div>
+            <div class="np">
+              <div class="art"></div>
+              <b>Manhã de sol</b><span>Trio Atlântico · Sala</span>
+              <span class="pause"><svg class="i" style="width:1.6cqw;height:1.6cqw"><use href="#i-pause"/></svg>Pausa</span>
+            </div>
+            <div class="an"><svg viewBox="0 0 100 100" class="analog numbers" aria-label="Relógio"></svg></div>
+            <div class="month"><div class="mh mname">Novembro</div><div class="g mgrid"></div></div>
+            <div class="sun"><div class="h"><svg class="i"><use href="#i-sunrise"/></svg>Nascer do sol</div><div class="v">07:26</div><div class="s">Pôr do sol 17:21</div></div>
+            <div class="wx"><div class="h">Casa</div><div class="v">18°</div><div class="s">Pouco nublado<br>Máx. 21° Mín. 13°</div></div>
+          </div>
+        </div>
+
+        <!-- 5 Fluxo -->
+        <div class="face bg-flow fx" role="tabpanel" aria-labelledby="tab-4">
+          <canvas id="flow" aria-label="Formas de vidro em movimento lento"></canvas>
+          <div class="tm"><b class="dclock">11:45</b><span class="dlong2">Quarta, 11 nov · 18°</span></div>
+        </div>
+
+        <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="vfoot">
+      <div class="cap" aria-live="polite">
+        <h3 id="cap-t">Mosaico</h3>
+        <p id="cap-p"></p>
+        <span class="src" id="cap-s"></span>
+      </div>
+      <div class="navs">
+        <button class="nav" id="prev" aria-label="Face anterior"><svg class="i" width="20" height="20"><use href="#i-left"/></svg></button>
+        <button class="nav" id="next" aria-label="Face seguinte"><svg class="i" width="20" height="20"><use href="#i-right"/></svg></button>
+      </div>
+    </div>
+    <p class="muted" style="font-size:15px">Outros faces previstos para depois do MVP: <b>Fotografias</b> (moldura digital a partir de uma pasta ou álbum do Home Assistant), <b>Câmaras</b> (só aparece se houver câmaras no Home Assistant; grelha de 1, 2 ou 4), <b>Casa 3D</b> (a vista atual do Pine3 em modo "imagem 3D") e <b>Foco</b> (uma divisão por ecrã, como no HomeDeck).</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">O ecrã</div>
+      <h2>Desenhado para o Galaxy Tab A7</h2>
+      <p class="muted">O A7 é um tablet de gama de entrada. O Pine3 View já tem modos para ele; o Homeview parte daí e trata o desempenho como requisito desde o primeiro dia.</p>
+    </div>
+    <div class="two">
+      <div class="box">
+        <h3>Restrições</h3>
+        <dl class="kv">
+          <dt>Ecrã</dt><dd>10,4", 2000×1200, ~1334×800 px no browser</dd>
+          <dt>Hardware</dt><dd>Snapdragon 662, 3 GB de RAM</dd>
+          <dt>Distância</dt><dd>Lido a 2–3 m na parede</dd>
+          <dt>App</dt><dd>Pine3 Wallpanel (WebView do Android)</dd>
+        </dl>
+      </div>
+      <div class="box">
+        <h3>Regras que daí saem</h3>
+        <ul>
+          <li><b>Vidro "falso" por defeito:</b> gradiente e transparência sem <code>backdrop-filter</code>. Blur verdadeiro só como opção.</li>
+          <li>Animar apenas <code>transform</code> e <code>opacity</code>; o Fluxo corre a 30 fps e pára quando o ecrã apaga.</li>
+          <li>Câmaras como imagens atualizadas; vídeo ao vivo só no face Câmaras ou ao tocar.</li>
+          <li>Texto mínimo de 20 px nos nomes; números principais a partir de 96 px.</li>
+          <li>Um só face montado de cada vez; os outros são descartados.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Tamanhos de tile</h3>
+        <div class="sizes" aria-label="Tamanhos de tile">
+          <div class="sz" style="width:64px;height:64px">S<span>1×1</span></div>
+          <div class="sz" style="width:136px;height:64px">M<span>2×1</span></div>
+          <div class="sz" style="width:136px;height:136px">L<span>2×2</span></div>
+        </div>
+        <p class="muted" style="font-size:15px">Grelha de 4×3 no Tab A7. Uma tile L mostra o termóstato ou uma câmara; uma M mostra o aspirador ou a meteo.</p>
+      </div>
+      <div class="box">
+        <h3>Proximidade e ecrã, com o Pine3 Wallpanel</h3>
+        <p class="muted" style="font-size:15px">A tua app já faz metade: a câmara frontal deteta movimento, acorda o ecrã e desliga-o (backlight a zero) após 15 s sem movimento. Hoje não fala com a página. Falta uma ponte entre os dois.</p>
+        <ul>
+          <li><b>Na app:</b> uma interface JavaScript <code>window.Pine3Wallpanel</code> que avisa a página de movimento e de ecrã a dormir, e aceita pedidos (brilho, acordar, manter acordado).</li>
+          <li><b>No Homeview:</b> movimento leva ao Painel; uns segundos sem movimento passam ao face ambiente com brilho baixo; mais tarde a app apaga o ecrã.</li>
+          <li><b>Deteção:</b> a app junta <code>Pine3Wallpanel/versão</code> ao user agent e expõe a interface. O Homeview só liga estas funções quando encontra as duas; num browser normal funciona como hoje, com inatividade por toque.</li>
+          <li>Opcional: o movimento do tablet aparece no Home Assistant como sensor de presença.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Arquitetura</div>
+      <h2>O que muda no código</h2>
+      <p class="muted">O backend do Pine3 View fica quase igual. O trabalho está no frontend: partir o painel atual em módulos e pôr um motor de faces por cima.</p>
+    </div>
+    <div class="arch box" style="padding:12px">
+      <svg viewBox="0 0 900 300" role="img" aria-label="Arquitetura: Home Assistant alimenta o backend reaproveitado, que serve o motor de faces e os módulos do frontend">
+        <rect class="bx" x="10" y="110" width="150" height="80" rx="12"/>
+        <text class="hd" x="85" y="145" text-anchor="middle">Home Assistant</text>
+        <text class="sm" x="85" y="165" text-anchor="middle">áreas, entidades,</text>
+        <text class="sm" x="85" y="180" text-anchor="middle">calendar, camera</text>
+
+        <rect class="bx" x="200" y="60" width="200" height="180" rx="12"/>
+        <text class="hd" x="300" y="88" text-anchor="middle">Backend (Python)</text>
+        <text x="220" y="118">discovery.py</text><text class="sm" x="220" y="134">reaproveitado</text>
+        <text x="220" y="162">websocket.py</text><text class="sm" x="220" y="178">+ definições dos faces</text>
+        <text x="220" y="206">calendário e fotos</text><text class="sm" x="220" y="222">novos comandos</text>
+
+        <rect class="bx new" x="440" y="20" width="210" height="110" rx="12"/>
+        <text class="hd" x="545" y="48" text-anchor="middle">Motor de faces</text>
+        <text class="sm" x="460" y="72">deslizar, ordem, ciclo dia/noite</text>
+        <text class="sm" x="460" y="90">ambiente → olhar → controlo</text>
+        <text class="sm" x="460" y="108">brilho e proximidade</text>
+
+        <rect class="bx new" x="440" y="160" width="210" height="120" rx="12"/>
+        <text class="hd" x="545" y="188" text-anchor="middle">Faces</text>
+        <text class="sm" x="460" y="212">Mosaico, Mosaico+, Painel</text>
+        <text class="sm" x="460" y="230">Relógio e agenda, Fluxo</text>
+        <text class="sm" x="460" y="248">Fotografias, Câmaras, Casa 3D</text>
+
+        <rect class="bx" x="690" y="60" width="200" height="180" rx="12"/>
+        <text class="hd" x="790" y="88" text-anchor="middle">Do Pine3 View</text>
+        <text class="sm" x="710" y="116">tiles e cartões de detalhe</text>
+        <text class="sm" x="710" y="136">clima, aspirador, TV</text>
+        <text class="sm" x="710" y="156">ecrã da divisão</text>
+        <text class="sm" x="710" y="176">house3d, plan2d, weather</text>
+        <text class="sm" x="710" y="196">i18n PT / EN</text>
+        <text class="sm" x="710" y="216">tokens de tema</text>
+
+        <path class="ln" d="M160 150H200"/>
+        <path class="ln" d="M400 110C420 110 420 75 440 75"/>
+        <path class="ln" d="M400 190C420 190 420 220 440 220"/>
+        <path class="ln" d="M545 130V160"/>
+        <path class="ln" d="M650 220C670 220 670 150 690 150"/>
+      </svg>
+    </div>
+    <p class="muted" style="font-size:14px">Contorno colorido: peças novas. O resto vem do Pine3 View, partido em módulos (hoje <code>pine3-view-panel.js</code> tem 1876 linhas).</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Fases</div>
+      <h2>Do repositório vazio ao tablet na parede</h2>
+      <p class="muted">As fases 0 a 4 formam o MVP: já dá para pendurar o A7 e usar todos os dias. Tamanho relativo: S pequeno, M médio, L grande.</p>
+    </div>
+    <div class="phases">
+      <div class="ph"><div class="n">0</div><div class="body"><h3>Base do repositório</h3><ul><li>Copiar o Pine3 View, mudar o domínio para <code>pine3_homeview</code> e o nome no painel.</li><li>CI, testes, <code>hacs.json</code>, README PT/EN.</li></ul></div><div class="meta"><span class="badge mvp">MVP</span><span class="size">S</span></div></div>
+      <div class="ph"><div class="n">1</div><div class="body"><h3>Arrumar o frontend</h3><ul><li>Partir o painel em módulos: tiles, cartões, divisão, dock, definições.</li><li>Tokens de tema explícitos para claro e escuro, em vez da conversão por regex do <code>theme.js</code>.</li><li>Material "vidro leve" para o A7.</li></ul></div><div class="meta"><span class="badge mvp">MVP</span><span class="size">L</span></div></div>
+      <div class="ph"><div class="n">2</div><div class="body"><h3>Motor de faces</h3><ul><li>Deslizar entre faces, pontos de navegação, ordem e faces ativos nas definições.</li><li>Inatividade leva ao face ambiente; o protetor de ecrã atual passa a ser um face.</li></ul></div><div class="meta"><span class="badge mvp">MVP</span><span class="size">M</span></div></div>
+      <div class="ph"><div class="n">3</div><div class="body"><h3>Faces Mosaico e Painel</h3><ul><li>Grelha 4×3 com tiles S, M e L, preenchida automaticamente e editável (arrastar, redimensionar, esconder).</li><li>Painel: o ecrã principal do Pine3 com chips de estado e Favoritos.</li><li>Toque longo abre os cartões de detalhe que já existem.</li></ul></div><div class="meta"><span class="badge mvp">MVP</span><span class="size">L</span></div></div>
+      <div class="ph"><div class="n">4</div><div class="body"><h3>Relógio e agenda, Mosaico+</h3><ul><li>Calendários do iCloud através da integração CalDAV do Home Assistant (<code>calendar.*</code>), com uma palavra-passe específica de app.</li><li>Lembretes: só se aparecerem como <code>todo.*</code>. Os Lembretes do iCloud atualizados costumam não estar disponíveis por CalDAV; em alternativa, uma lista local do Home Assistant.</li><li>Widgets de meteo com IPMA, agenda e o que está a tocar.</li></ul></div><div class="meta"><span class="badge mvp">MVP</span><span class="size">M</span></div></div>
+      <div class="ph"><div class="n">5</div><div class="body"><h3>Faces ambiente</h3><ul><li>Fotografias a partir de uma pasta de <code>media_source</code>.</li><li>Fluxo em canvas leve, que reage ao toque e à presença.</li><li>Casa 3D como face, em modo imagem 3D no A7.</li></ul></div><div class="meta"><span class="badge later">Depois</span><span class="size">M</span></div></div>
+      <div class="ph"><div class="n">6</div><div class="body"><h3>Ponte com o Pine3 Wallpanel</h3><ul><li>No <code>wallpanel-android</code>: interface <code>Pine3Wallpanel</code> com eventos de movimento e de ecrã, e pedidos de brilho, acordar e manter acordado.</li><li>Deteção pelo user agent e pela interface; sem a app, o Homeview funciona só com toque.</li><li>No Homeview: Painel quando há movimento, face ambiente antes de o ecrã apagar, brilho a seguir o dia e a noite.</li><li>Movimento do tablet como sensor no Home Assistant.</li><li>Faces dinâmicos: manhã com agenda e meteo, noite com relógio escuro.</li></ul></div><div class="meta"><span class="badge later">Depois</span><span class="size">M</span></div></div>
+      <div class="ph"><div class="n">7</div><div class="body"><h3>Câmaras, Foco e acabamento</h3><ul><li>Face Câmaras, só se houver câmaras no Home Assistant; campainha que acorda o tablet se o Comelit passar a mandar um evento para o HA.</li><li>Face Foco, uma divisão por ecrã.</li><li>Screenshots no A7 e testes de desempenho.</li></ul></div><div class="meta"><span class="badge later">Depois</span><span class="size">M</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Atenção</div>
+      <h2>Riscos</h2>
+    </div>
+    <div class="risks">
+      <div class="risk"><b>Nomes e marcas</b><span>"HomeView" e "Home Modular" são da Apple. Usamos nomes próprios (Mosaico, Fluxo…) e "Pine3 Homeview" como nome do projeto; convém confirmar que o nome não cria confusão com o produto da Apple.</span></div>
+      <div class="risk"><b>Rehome e HomeDeck são pagos</b><span>Só inspiração de comportamento e layout. Nada de código, imagens ou textos deles.</span></div>
+      <div class="risk"><b>Desempenho no A7</b><span>Blur, vídeo e 3D ao mesmo tempo bloqueiam o tablet. Por isso só um face vive de cada vez e o vidro é falso por defeito.</span></div>
+      <div class="risk"><b>Gestos e câmara no Wallpanel</b><span>A app troca de painel com 3 dedos e os faces mudam com 1 dedo, por isso não chocam. A câmara frontal fica ocupada pela deteção de movimento, por isso não serve para outras coisas na página.</span></div>
+      <div class="risk"><b>Câmaras e campainha fora do HA</b><span>As câmaras estão no Apple Home e a campainha Comelit no Google Home. Um acessório HomeKit só aceita um controlador, por isso trazê-las para o HA obriga a tirá-las do Apple Home. Ficam de fora do MVP.</span></div>
+      <div class="risk"><b>Lembretes do iCloud</b><span>Os calendários funcionam por CalDAV; os Lembretes atualizados normalmente não. Confirmar no teu HA antes da fase 4.</span></div>
+      <div class="risk"><b>Refactor grande na fase 1</b><span>Partir 1876 linhas pode partir funcionalidades. Mitigar com screenshots de antes e depois em cada ecrã.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Para decidir</div>
+      <h2>Decisões tomadas</h2>
+    </div>
+    <ul class="qs" style="list-style:none;padding-left:0">
+      <li><b>Nomes:</b> os nomes dos faces ficam.</li>
+      <li><b>Face inicial:</b> Painel.</li>
+      <li><b>Proximidade:</b> pelo Pine3 Wallpanel, que passa a identificar-se para o Homeview o detetar.</li>
+      <li><b>Agenda:</b> calendários do iCloud por CalDAV.</li>
+      <li><b>Câmaras:</b> fora do MVP; o Mosaico+ mostra o que está a tocar no lugar da câmara.</li>
+    </ul>
+    <p class="muted">Próximo passo: fases 0 e 1 no repositório Pine3-Homeview.</p>
+  </section>
+
+  <footer>Fontes lidas a 11 nov 2026: apple.com/apple-homeview, userehome.com, homedeck.pro e os repositórios pine3-view (v0.22.2) e wallpanel-android. Maquetes com dados de exemplo.</footer>
+</div>
+
+<script>
+(function(){
+  const faces=[...document.querySelectorAll('.face')];
+  const tabs=[...document.querySelectorAll('.tab')];
+  const dots=[...document.querySelectorAll('.dots i')];
+  const caps=[
+    ["Mosaico","O face principal no estilo HomeView: grelha de tiles grandes, creme quando ligadas, vidro quando desligadas. Toque liga e desliga; toque longo abre o cartão completo do Pine3.","Base: Home Modular (Apple), faces do Rehome, tiles do Pine3."],
+    ["Mosaico+","Widgets misturados com tiles: meteo com avisos IPMA, agenda do dia (calendários do iCloud), o que está a tocar e cenas. Sem câmaras, porque as tuas não estão no Home Assistant.","Base: Home Modular Plus (Rehome), agenda do HomeDeck, meteo e Apple TV/HomePod do Pine3."],
+    ["Painel","Face inicial. O ecrã principal do Pine3 View, mais denso: relógio e estado à esquerda; chips de estado, Favoritos e divisões à direita.","Base: layout Lateral (Pine3 e HomeDeck), chips de estado da app Casa."],
+    ["Relógio e agenda","Face para ler de longe: data, mês, o que está a tocar, nascer do sol e meteo. Ideal como face ambiente durante o dia.","Base: faces de Calendário e Relógio do HomeView."],
+    ["Fluxo","Face ambiente animado: formas de vidro a mover-se devagar, com a hora. Reage à presença e escurece à noite.","Base: face Flow do HomeView. Canvas leve, 30 fps."]
+  ];
+  let cur=0;
+  function show(i){
+    cur=(i+faces.length)%faces.length;
+    faces.forEach((f,k)=>f.classList.toggle('on',k===cur));
+    tabs.forEach((t,k)=>t.setAttribute('aria-selected',k===cur?'true':'false'));
+    dots.forEach((d,k)=>d.classList.toggle('on',k===cur));
+    document.getElementById('cap-t').textContent=caps[cur][0];
+    document.getElementById('cap-p').textContent=caps[cur][1];
+    document.getElementById('cap-s').textContent=caps[cur][2];
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>show(+t.dataset.i)));
+  document.getElementById('prev').addEventListener('click',()=>show(cur-1));
+  document.getElementById('next').addEventListener('click',()=>show(cur+1));
+  const scr=document.getElementById('screen');
+  let x0=null;
+  scr.addEventListener('pointerdown',e=>{x0=e.clientX});
+  scr.addEventListener('pointerup',e=>{if(x0===null)return;const dx=e.clientX-x0;x0=null;if(Math.abs(dx)>40)show(cur+(dx<0?1:-1))});
+  show(2);
+
+  // dates and clocks from the viewer's real time
+  const WD=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+  const WDF=["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+  const MO=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  const cap=s=>s[0].toUpperCase()+s.slice(1);
+  function tick(){
+    const d=new Date(),hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+    document.querySelectorAll('.dclock').forEach(e=>e.textContent=hh+':'+mm);
+    document.querySelectorAll('.dlong').forEach(e=>e.textContent=WDF[d.getDay()]+', '+d.getDate()+' de '+MO[d.getMonth()]);
+    document.querySelectorAll('.dlong2').forEach(e=>e.textContent=WD[d.getDay()]+', '+d.getDate()+' '+MO[d.getMonth()].slice(0,3)+' · 18°');
+    document.querySelectorAll('.wd').forEach(e=>e.textContent=WD[d.getDay()]);
+    document.querySelectorAll('.wd3').forEach(e=>e.textContent=WD[d.getDay()].slice(0,3));
+    document.querySelectorAll('.mo3').forEach(e=>e.textContent=cap(MO[d.getMonth()].slice(0,3)));
+    document.querySelectorAll('.dnum').forEach(e=>e.textContent=d.getDate());
+    document.querySelectorAll('.mname').forEach(e=>e.textContent=cap(MO[d.getMonth()]));
+    document.querySelectorAll('svg.analog').forEach(s=>drawAnalog(s,d));
+  }
+  function drawAnalog(svg,d){
+    const nums=svg.classList.contains('numbers');
+    let h='';
+    if(!svg.dataset.face){
+      let f='';
+      for(let k=0;k<60;k++){
+        const a=k*6*Math.PI/180, big=k%5===0;
+        if(nums&&!big){const r1=47,r2=44;f+=`<line x1="${50+r1*Math.sin(a)}" y1="${50-r1*Math.cos(a)}" x2="${50+r2*Math.sin(a)}" y2="${50-r2*Math.cos(a)}" stroke="rgba(255,255,255,.5)" stroke-width=".6"/>`;}
+        if(big){
+          if(nums){const n=k/5||12;f+=`<text x="${50+36*Math.sin(a)}" y="${50-36*Math.cos(a)+3.6}" fill="#fff" font-size="10" font-family="Outfit,sans-serif" text-anchor="middle" font-weight="500">${n}</text>`;}
+          else{const r1=47,r2=39;f+=`<line x1="${50+r1*Math.sin(a)}" y1="${50-r1*Math.cos(a)}" x2="${50+r2*Math.sin(a)}" y2="${50-r2*Math.cos(a)}" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`;}
+        }
+      }
+      svg.dataset.face=f;
+    }
+    h+=svg.dataset.face;
+    if(!nums) h='<circle cx="50" cy="50" r="49" fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.35)" stroke-width=".6"/>'+h;
+    const s=d.getSeconds(),m=d.getMinutes()+s/60,hr=(d.getHours()%12)+m/60;
+    const hand=(deg,len,w,c)=>{const a=deg*Math.PI/180;return `<line x1="50" y1="50" x2="${50+len*Math.sin(a)}" y2="${50-len*Math.cos(a)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`};
+    h+=hand(hr*30,24,3.4,'#fff')+hand(m*6,36,2.4,'#fff')+hand(s*6,40,.8,'#f6b83f')+'<circle cx="50" cy="50" r="1.8" fill="#f6b83f"/>';
+    svg.innerHTML=h;
+  }
+  function month(){
+    const d=new Date(),y=d.getFullYear(),mo=d.getMonth(),today=d.getDate();
+    const first=(new Date(y,mo,1).getDay()+6)%7, days=new Date(y,mo+1,0).getDate();
+    let h=['S','T','Q','Q','S','S','D'].map(x=>`<span class="h">${x}</span>`).join('');
+    for(let k=0;k<first;k++) h+='<span></span>';
+    for(let k=1;k<=days;k++) h+= k===today?`<span><span class="t0">${k}</span></span>`:`<span class="${k<today?'p':''}">${k}</span>`;
+    document.querySelectorAll('.mgrid').forEach(e=>e.innerHTML=h);
+  }
+  month(); tick(); setInterval(tick,1000);
+
+  // Fluxo: slow drifting glass shapes
+  const cv=document.getElementById('flow'),cx=cv.getContext('2d');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const shapes=[
+    {x:.33,y:.30,w:.24,h:.37,r:.09,c:'#b7f0d8'},{x:.53,y:.12,w:.11,h:.36,r:.05,c:'#bdeedc'},{x:.65,y:.25,w:.10,h:.23,r:.05,c:'#c8f0e4'},
+    {x:.26,y:.52,w:.23,h:.13,r:.065,c:'#cfd6f2'},{x:.53,y:.55,w:.08,h:.13,r:.04,c:'#c5d9ef'},{x:.62,y:.52,w:.14,h:.23,r:.07,c:'#c2e6e6'},
+    {x:.35,y:.66,w:.14,h:.23,r:.07,c:'#cdd1f3'},{x:.53,y:.77,w:.23,h:.13,r:.065,c:'#cfe4ee'}
+  ];
+  function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath();}
+  let last=0;
+  function frame(t){
+    if(!faces[4].classList.contains('on')){requestAnimationFrame(frame);return}
+    if(t-last<33&&!reduce){requestAnimationFrame(frame);return}
+    last=t;
+    const W=cv.clientWidth,H=cv.clientHeight,dpr=Math.min(2,devicePixelRatio||1);
+    if(cv.width!==Math.round(W*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr)}
+    cx.setTransform(dpr,0,0,dpr,0,0);cx.clearRect(0,0,W,H);
+    const g=cx.createRadialGradient(W*.45,H*.4,0,W*.45,H*.4,W*.35);g.addColorStop(0,'rgba(120,230,170,.55)');g.addColorStop(1,'rgba(120,230,170,0)');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    shapes.forEach((s,k)=>{
+      const p=reduce?0:t/1000;
+      const dx=Math.sin(p*.25+k)*W*.012, dy=Math.cos(p*.2+k*1.7)*H*.015;
+      const x=s.x*W+dx,y=s.y*H+dy,w=s.w*W*.78,h=s.h*H,r=Math.min(s.r*W*.78,h/2,w/2);
+      const lg=cx.createLinearGradient(x,y,x,y+h);lg.addColorStop(0,s.c+'f0');lg.addColorStop(1,s.c+'a8');
+      cx.fillStyle=lg;rr(x,y,w,h,r);cx.fill();
+      cx.strokeStyle='rgba(255,255,255,.75)';cx.lineWidth=1.2;cx.stroke();
+      cx.fillStyle='rgba(255,255,255,.25)';rr(x+w*.06,y+h*.04,w*.88,h*.18,Math.min(r*.8,h*.09));cx.fill();
+    });
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  tabs[4].addEventListener('click',()=>requestAnimationFrame(frame));
+  document.getElementById('next').addEventListener('click',()=>requestAnimationFrame(frame));
+  document.getElementById('prev').addEventListener('click',()=>requestAnimationFrame(frame));
+})();
+</script>

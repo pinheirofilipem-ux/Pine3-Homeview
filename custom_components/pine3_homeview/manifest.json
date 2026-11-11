@@ -1,0 +1,17 @@
+{
+  "domain": "pine3_homeview",
+  "name": "Pine3 Homeview",
+  "codeowners": [
+    "@pinheirofilipem-ux"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http",
+    "panel_custom"
+  ],
+  "documentation": "https://github.com/pinheirofilipem-ux/Pine3-Homeview",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/pinheirofilipem-ux/Pine3-Homeview/issues",
+  "version": "0.1.0"
+}

@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Outfit;src:url(../../custom_components/pine3_homeview/frontend/fonts/outfit-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
+html,body{margin:0;background:transparent}
+#logo{display:flex;align-items:center;gap:22px;padding:8px 18px 8px 8px;width:max-content}
+#logo b{font:600 74px/1 Outfit;letter-spacing:-.01em}
+#logo b span{font-weight:300}
+.light b{color:#2a1a29}.dark b{color:#f5efe1}
+</style></head><body>
+<template id="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a4c74"/><stop offset=".55" stop-color="#5a2b52"/><stop offset="1" stop-color="#2c1530"/></linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#f6b83f" stop-opacity=".85"/><stop offset="1" stop-color="#f6b83f" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="4"/>
+  <!-- pine in three tiers (Pine3), drawn bottom to top -->
+  <rect x="232" y="380" width="48" height="56" rx="10" fill="#f6b83f"/>
+  <path d="M256 214 L412 384 Q414 390 406 390 H106 Q98 390 100 384 Z" fill="#e4d7bd"/>
+  <path d="M256 150 L370 286 Q372 292 364 292 H148 Q140 292 142 286 Z" fill="#eee5d2"/>
+  <path d="M256 84 L334 186 Q336 192 328 192 H184 Q176 192 178 186 Z" fill="#f8f2e6"/>
+  <!-- a lit window, like a room that's on -->
+  <circle cx="256" cy="336" r="44" fill="url(#glow)"/>
+  <rect x="237" y="318" width="38" height="38" rx="9" fill="#f6b83f"/>
+</svg></template>
+<div id="sq" style="width:512px;height:512px"></div>
+<div id="logo"><div class="ic" style="width:112px;height:112px"></div><b>Pine3 <span>View</span></b></div>
+<script>
+const svg=document.getElementById('icon').innerHTML;
+document.getElementById('sq').innerHTML=svg;document.querySelector('#logo .ic').innerHTML=svg;
+</script></body></html>

@@ -1,0 +1,10 @@
+"""Constants for Pine3 Homeview."""
+
+DOMAIN = "pine3_homeview"
+PANEL_URL_PATH = "pine3-homeview"
+PANEL_TITLE = "Pine3 Homeview"
+PANEL_ICON = "mdi:tablet-dashboard"
+PANEL_ELEMENT = "pine3-homeview-panel"
+STATIC_URL = "/pine3_homeview_static"
+EVENT_UPDATED = "pine3_homeview_updated"
+VERSION = "0.1.0"
