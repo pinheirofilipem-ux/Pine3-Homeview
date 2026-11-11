@@ -27,6 +27,7 @@ import { MosaicMixin } from "./views/mosaic.js";
 import { PainelMixin } from "./views/painel.js";
 import { AgendaMixin } from "./views/agenda.js";
 import { AmbientMixin } from "./views/ambient.js";
+import { WallpanelMixin } from "./ui/wallpanel.js";
 
 loadFonts();
 
@@ -61,6 +62,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     this._applyWakeLock();
     this._onResize = () => { this._fit3d?.(); this._fitDock(); this._dockSpace(); this._placeBlob(false); this._packSections(); };
     window.addEventListener("resize", this._onResize);
+    this._bindWallpanel();
     if (this._hass) this._connect();
   }
   disconnectedCallback() {
@@ -73,6 +75,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     this._unsub?.then?.((u) => u()).catch(() => {});
     this._unsub = null;
     this._connecting = false;
+    this._unbindWallpanel();
   }
   set narrow(n) { this._narrow = n; }
   set hass(h) {
@@ -233,6 +236,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     this._faceKey = face;
     this._faceDir = 0;
     this.classList.toggle("ambient", !!this._ambient);
+    this._applyBrightness();
     this.classList.toggle("noanim", !anim);
     this.classList.toggle("lite", this._liteFx());
     if (!this._app) {
@@ -267,6 +271,6 @@ class Pine3HomeviewPanel extends HTMLElement {
   }
 }
 
-mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin, AgendaMixin, AmbientMixin);
+mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin, AgendaMixin, AmbientMixin, WallpanelMixin);
 
 if (!customElements.get("pine3-homeview-panel")) customElements.define("pine3-homeview-panel", Pine3HomeviewPanel);

@@ -97,6 +97,7 @@ export class SettingsViewMixin {
         ${this._toggle("clock_24h", d.clock_24h, t("Relógio de 24 horas"), t("Desliga para mostrar AM/PM."))}
       </div></div>
       <div class="panel glass"><h3 style="margin-top:0">${t("Este dispositivo")}</h3><p>${t("Opções guardadas só neste browser, para um tablet na parede ficar diferente do telemóvel.")}</p><div class="opts">
+        ${this._wallpanelSettings()}
         ${this._localToggle("hide_sidebar", t("Esconder a barra lateral do Home Assistant"), t("O painel ocupa a largura toda. Também podes abrir o painel com ?kiosk no endereço."))}
         ${this._localToggle("wake_lock", t("Manter o ecrã ligado"), navigator.wakeLock ? t("Impede o ecrã de adormecer enquanto o painel está aberto.") : t("Este browser não suporta manter o ecrã ligado."), !navigator.wakeLock)}
         ${(() => {

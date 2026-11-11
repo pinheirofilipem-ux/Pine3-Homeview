@@ -248,4 +248,11 @@ export const EN = {
   "A casa em 3D, por pisos, com as luzes acesas.": "The home in 3D, by floor, with the lights that are on.",
   "Fotografias": "Photos",
   "Moldura digital com as fotografias de uma pasta de media.": "A digital photo frame with the photos of a media folder.",
+  // Pine3 Wallpanel
+  "Não detetado. Na app Pine3 Wallpanel, o movimento em frente ao tablet tira o painel do face ambiente e o brilho baixa no ambiente.": "Not found. In the Pine3 Wallpanel app, movement in front of the tablet brings the panel out of the ambient face, and the brightness drops on the ambient face.",
+  "Detetado (ponte {v}). O movimento em frente ao tablet conta como um toque e tira o painel do face ambiente.": "Found (bridge {v}). Movement in front of the tablet counts as a touch and brings the panel out of the ambient face.",
+  "Sempre baixo": "Always low",
+  "Não mexer": "Leave it",
+  "Brilho no face ambiente": "Brightness on the ambient face",
+  "Automático: 50% de dia e 12% de noite (pelo sol). Sempre baixo: 12%. Fora do face ambiente, o brilho é o do sistema.": "Automatic: 50% by day and 12% at night (by the sun). Always low: 12%. Outside the ambient face the brightness is the system's.",
 };
