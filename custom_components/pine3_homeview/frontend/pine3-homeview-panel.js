@@ -26,6 +26,7 @@ import { FacesMixin } from "./views/faces.js";
 import { MosaicMixin } from "./views/mosaic.js";
 import { PainelMixin } from "./views/painel.js";
 import { AgendaMixin } from "./views/agenda.js";
+import { AmbientMixin } from "./views/ambient.js";
 
 loadFonts();
 
@@ -127,6 +128,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     if (this._day && this._day !== day && !this._drag) { this._day = day; this._render(); return; }
     this._day = day;
     if (this._view === "home" && ["agenda", "mosaico_plus"].includes(this._faceId())) this._agenda();
+    this._photoTick();
     this._updateClock();
   }
 
@@ -265,6 +267,6 @@ class Pine3HomeviewPanel extends HTMLElement {
   }
 }
 
-mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin, AgendaMixin);
+mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin, AgendaMixin, AmbientMixin);
 
 if (!customElements.get("pine3-homeview-panel")) customElements.define("pine3-homeview-panel", Pine3HomeviewPanel);

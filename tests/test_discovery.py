@@ -444,3 +444,18 @@ async def test_agenda_settings(hass: HomeAssistant, hass_ws_client) -> None:
     for bad_id, bad in enumerate([{"calendars": ["light.x"]}, {"todo_list": "calendar.x"}, {"mosaic_plus": [{"id": "x"}]}], start=2):
         await ws.send_json({"id": bad_id, "type": "pine3_homeview/settings", **bad})
         assert not (await ws.receive_json())["success"], bad
+
+
+async def test_ambient_faces_settings(hass: HomeAssistant, hass_ws_client) -> None:
+    await async_setup_api(hass)
+    s = hass.data["pine3_homeview"]["settings"]
+    assert s["photos_folder"] == "" and s["photo_interval"] == 30
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "pine3_homeview/settings", "photos_folder": "media-source://media_source/local/fotos",
+                        "photo_interval": 60, "faces": ["painel", "fotos", "fluxo", "casa3d"], "ambient_face": "fluxo"})
+    msg = await ws.receive_json()
+    assert msg["success"], msg
+    assert msg["result"]["photos_folder"].endswith("/fotos") and msg["result"]["ambient_face"] == "fluxo"
+    for bad_id, bad in enumerate([{"photos_folder": "/media/fotos"}, {"photo_interval": 1}], start=2):
+        await ws.send_json({"id": bad_id, "type": "pine3_homeview/settings", **bad})
+        assert not (await ws.receive_json())["success"], bad

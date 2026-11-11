@@ -31,7 +31,11 @@ Já disponíveis:
 
 A agenda lê as entidades `calendar.*` e `todo.*` do Home Assistant. Os calendários do iCloud entram com a integração **CalDAV** (com uma palavra-passe específica de app); os Lembretes do iCloud costumam não estar disponíveis por CalDAV, por isso podes usar uma lista local do Home Assistant. Escolhe os calendários e a lista em **Definições → Início → Agenda**.
 
-O Fluxo chega numa próxima fase.
+- **Casa 3D**: a vista 3D da casa como face (em tablets mais fracos, a Imagem 3D).
+- **Fotografias**: moldura digital com as fotografias de uma pasta de media do Home Assistant (`/media`), com a hora, a data e o tempo por cima. Escolhe a pasta e o tempo de cada fotografia em **Definições → Início → Fotografias**.
+- **Fluxo**: formas de vidro em movimento lento, com a hora; afastam-se quando passas o dedo.
+
+Fotografias, Relógio, Relógio e agenda e Fluxo podem ser o face ambiente. A Casa 3D, as Fotografias e o Fluxo vêm desligados: liga-os em **Definições → Início → Faces**.
 
 ### Previstos
 - **Painel** (face inicial): o ecrã principal do Pine3 com chips de estado e Favoritos.

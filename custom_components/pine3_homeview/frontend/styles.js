@@ -914,4 +914,29 @@ a.pill{color:inherit;text-decoration:none}
 .mt-np.s .np-art{display:none}
 .mt-np.empty{justify-content:flex-start}
 @media (max-width:1000px){.agf{grid-template-columns:1fr;gap:28px}.mg{margin-top:0}}
+
+/* ---------- Fotografias and Fluxo faces ---------- */
+.phf,.flf{position:fixed;inset:0;overflow:hidden;background:#000}
+.phf.saver,.flf.saver{z-index:30;display:block}
+.phf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.phf img.in{animation:phin 1.2s ease}
+@keyframes phin{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.phf img.in{animation:none}}
+.phf::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(transparent,rgba(0,0,0,.55));pointer-events:none}
+.ph-cap,.fl-cap{position:absolute;left:44px;bottom:calc(var(--dock-space,108px) + 16px);z-index:1;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.fl-cap{left:auto;right:44px;text-align:right}
+.ph-cap .clock,.fl-cap .clock{color:#fff;font-weight:200;font-size:clamp(64px,7vw,104px);margin:0;line-height:1}
+.ph-sub{font-size:20px;opacity:.9;margin-top:6px;display:flex;align-items:center;gap:6px}
+.fl-cap .ph-sub{justify-content:flex-end}
+.ph-sub ha-icon{--mdc-icon-size:22px}
+.ph-empty{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;text-align:center;padding:40px;color:#fff;background:radial-gradient(80% 70% at 50% 40%,#2b1d2b,#0b070b)}
+.ph-empty ha-icon{--mdc-icon-size:56px;opacity:.6}
+.ph-empty b{font-family:var(--display);font-weight:500;font-size:24px}
+.ph-empty span{max-width:46ch;color:rgba(255,255,255,.7);font-size:16px}
+.saver .ph-empty{background:#000}
+.flf{background:radial-gradient(70% 70% at 50% 45%,#86a8b8 0%,#8c86c9 55%,#7b6bc0 100%)}
+.flf canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.flf.saver{background:radial-gradient(70% 70% at 50% 45%,#3d4f58 0%,#3c3a5c 55%,#2a2446 100%)}
+.saver .ph-cap,.saver .fl-cap{bottom:36px}
+@media (max-width:700px){.ph-cap{left:20px}.fl-cap{right:20px}}
 `;

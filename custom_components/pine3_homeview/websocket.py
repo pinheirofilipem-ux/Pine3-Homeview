@@ -49,6 +49,8 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "mosaic_plus": None,
     "calendars": None,  # None: every calendar entity
     "todo_list": "",  # "": the first todo entity, "none": no reminders
+    "photos_folder": "",  # a media_source folder for the Fotografias face
+    "photo_interval": 30,  # seconds
     "big_rooms": [],
     "big_devices": [],
     "device_order": {},
@@ -59,7 +61,7 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "wall_height": 30,
     "settings_version": 2,
 }
-FACE_IDS = ["painel", "mosaico", "mosaico_plus", "agenda", "relogio", "fluxo"]
+FACE_IDS = ["painel", "mosaico", "mosaico_plus", "agenda", "casa3d", "fotos", "relogio", "fluxo"]
 DOCK_ITEMS = ["home", "rooms", "house", "scenes", "climate", "security"]
 DEVICE_TYPES = [
     "ceiling", "lamp", "led", "spot", "bulb", "tv", "appletv", "homepod", "speaker", "ac", "fan", "purifier",
@@ -175,6 +177,8 @@ def ws_subscribe(hass: HomeAssistant, connection: websocket_api.ActiveConnection
         vol.Optional("mosaic_plus"): MOSAIC,
         vol.Optional("calendars"): vol.Any(None, [vol.Match(r"^calendar\.[a-z0-9_]+$")]),
         vol.Optional("todo_list"): vol.Any("", "none", vol.Match(r"^todo\.[a-z0-9_]+$")),
+        vol.Optional("photos_folder"): vol.Any("", vol.Match(r"^media-source://")),
+        vol.Optional("photo_interval"): vol.All(int, vol.Range(min=5, max=3600)),
         vol.Optional("big_rooms"): [str],
         vol.Optional("big_devices"): [str],
         vol.Optional("device_order"): {str: [str]},

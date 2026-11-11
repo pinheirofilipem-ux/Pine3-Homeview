@@ -12,8 +12,10 @@ export const FACES = {
   mosaico: { icon: "mdi:view-grid-plus-outline", label: "Mosaico", sub: "Grelha de tiles grandes, para ler de longe." },
   mosaico_plus: { icon: "mdi:view-quilt-outline", label: "Mosaico+", sub: "Meteo, agenda, o que está a tocar e cenas." },
   agenda: { icon: "mdi:calendar-clock", label: "Relógio e agenda", sub: "Data, mês, agenda de hoje, música, sol e tempo.", ambient: true },
+  casa3d: { icon: "mdi:cube-outline", label: "Casa 3D", sub: "A casa em 3D, por pisos, com as luzes acesas." },
+  fotos: { icon: "mdi:image-multiple-outline", label: "Fotografias", sub: "Moldura digital com as fotografias de uma pasta de media.", ambient: true },
   relogio: { icon: "mdi:clock-outline", label: "Relógio", sub: "Hora grande, data, tempo e luzes acesas.", ambient: true },
-  fluxo: { icon: "mdi:blur", label: "Fluxo", sub: "Formas de vidro em movimento lento, com a hora.", soon: true, ambient: true },
+  fluxo: { icon: "mdi:blur", label: "Fluxo", sub: "Formas de vidro em movimento lento, com a hora.", ambient: true },
 };
 export const FACE_IDS = Object.keys(FACES);
 const ready = (id) => FACES[id] && !FACES[id].soon;
@@ -76,6 +78,9 @@ export class FacesMixin {
     else if (id === "mosaico") body = this._mosaicFace(rooms);
     else if (id === "mosaico_plus") body = this._mosaicFace(rooms, "mosaic_plus");
     else if (id === "agenda") body = this._agendaFace(rooms, this._ambient);
+    else if (id === "fotos") body = this._photosFace(this._ambient);
+    else if (id === "fluxo") body = this._flowFace(this._ambient);
+    else if (id === "casa3d") body = this._house3dFace(rooms);
     else body = this._homeView(rooms);
     const dots = !this._ambient && !this._edit && list.length > 1
       ? `<div class="fdots" role="tablist" aria-label="${t("Faces")}">${list.map((f) =>
