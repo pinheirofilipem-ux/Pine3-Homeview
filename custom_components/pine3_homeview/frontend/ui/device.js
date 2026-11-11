@@ -41,7 +41,12 @@ export class DeviceMixin {
     return this._weakDevice() ? "image" : mem != null && mem <= 4 ? "lite" : "full";
   }
   /** Light effects: no frosted-glass blur (backdrop-filter), the costliest thing for a weak GPU. */
-  _liteFx() { const v = store.get("lite_fx", "auto"); return v === "auto" ? this._weakDevice() : v === "on"; }
+  _liteFx() { const v = store.get("lite_fx", "auto"); return v === "auto" ? this._weakDevice() || this._wallTablet() : v === "on"; }
+  /** A touch tablet with up to 4 GB (e.g. Galaxy Tab A7): blur costs it more than it gives, so "light glass" by default. */
+  _wallTablet() {
+    const mem = navigator.deviceMemory;
+    return mem != null && mem <= 4 && navigator.maxTouchPoints > 0 && Math.min(screen.width, screen.height) >= 600;
+  }
   /** Animations: this device's choice, or the panel-wide setting. */
   _animOn(cfg) { const v = store.get("anim", "auto"); return v === "auto" ? cfg.animations !== false : v === "on"; }
   _localChoice(key, value, options, label, sub) {

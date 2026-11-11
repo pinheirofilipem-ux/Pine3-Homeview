@@ -216,14 +216,14 @@ export const cssCanvas = `
 .stage.cvs canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .cvl{position:absolute;left:0;top:0;pointer-events:none;transform-origin:0 0}
 @media (max-width:720px){.cvl.fname{display:none}}
-.cvl .lb{transform:translate(-50%,-100%);white-space:nowrap;text-align:center;padding:5px 11px;border-radius:13px;background:rgba(20,10,22,.78);border:1px solid rgba(255,255,255,.14);line-height:1.2}
+.cvl .lb{transform:translate(-50%,-100%);white-space:nowrap;text-align:center;padding:5px 11px;border-radius:13px;background:rgba(var(--deep-rgb, 20,10,22),min(var(--deep-max),calc(.78 + var(--deep-add))));border:1px solid rgba(var(--fg),min(1,calc(.14 * var(--fg-k))));line-height:1.2}
 .flat .cvl .lb{transform:translate(-50%,-50%)}
 .cvl.lit .lb{background:var(--cream);color:var(--ink)}
 .cvl.lit .lb small{color:var(--ink-soft)}
-.cvl.fname .lb{background:rgba(20,10,22,.55);border:0;transform:translate(0,-100%)}
+.cvl.fname .lb{background:rgba(var(--deep-rgb, 20,10,22),min(var(--deep-max),calc(.55 + var(--deep-add))));border:0;transform:translate(0,-100%)}
 .cvl.fname .lb small{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
 .cvt{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;transform-origin:0 0}
-.cvt .mki{transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(25,14,28,.85);color:#fff;border:2px solid rgba(255,255,255,.45)}
-.cvt.on .mki{background:var(--cream);color:var(--ink);border-color:#fff}
+.cvt .mki{transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--deep-rgb, 25,14,28),min(var(--deep-max),calc(.85 + var(--deep-add))));color:rgb(var(--fg));border:2px solid rgba(var(--fg),min(1,calc(.45 * var(--fg-k))))}
+.cvt.on .mki{background:var(--cream);color:var(--ink);border-color:rgb(var(--fg))}
 .cvt .mki ha-icon{--mdc-icon-size:18px}
 `;

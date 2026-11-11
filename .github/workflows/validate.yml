@@ -29,3 +29,13 @@ jobs:
           python-version: "3.13"
       - run: pip install -r requirements_test.txt
       - run: pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check the syntax of every frontend module
+        run: for f in $(find custom_components/pine3_homeview/frontend -name '*.js'); do node --check "$f"; done

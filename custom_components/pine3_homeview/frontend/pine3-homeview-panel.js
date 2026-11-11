@@ -7,7 +7,7 @@ import { TOGGLE, THEMES, DEFAULTS, dom, store, loadFonts } from "./const.js";
 import { css } from "./styles.js";
 import { t, setLang, lang } from "./i18n.js";
 import { Weather } from "./weather.js";
-import { toLight, currentTheme, isLight } from "./theme.js";
+import { cssLight, currentTheme, isLight } from "./theme.js";
 import { houseView, css3d } from "./house3d.js";
 import { cssPlan } from "./plan2d.js";
 import { clone, mixin } from "./util.js";
@@ -233,8 +233,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     const light = isLight(themeKey);
     this.classList.toggle("light", light);
     if (this._styleLight !== light) {
-      const all = `${css}${css3d}${cssPlan}`;
-      this._styleEl.textContent = light ? (this._lightCss ||= toLight(all)) : all;
+      this._styleEl.textContent = `${css}${css3d}${cssPlan}${light ? cssLight : ""}`;
       this._styleLight = light;
     }
     this._viewKey = viewKey;

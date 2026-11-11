@@ -31,6 +31,17 @@ Ecrã principal: um Samsung Galaxy Tab A7 deitado na parede, com a app
 Requer Home Assistant 2024.7 ou mais recente. Usa o seu próprio domínio (`pine3_homeview`), definições
 e opções por dispositivo, por isso não interfere com um Pine3 View instalado.
 
+## Organização do código
+`custom_components/pine3_homeview/frontend/`:
+- `pine3-homeview-panel.js`: o elemento do painel (ciclo de vida, dados, desenho).
+- `model.js`: divisões e funções por entidade. `util.js`: funções partilhadas.
+- `views/`: ecrãs da casa, divisões, definições e previsão. `ui/`: tiles, cartão de detalhe, dock, modo de edição, opções do dispositivo, eventos.
+- `tokens.js`: tokens de cor para os temas escuro e claro (o `theme.js` junta os claros nos temas claros).
+- `styles.js`, `house3d.js`, `plan2d.js`, `housecanvas.js`, `weather.js`, `i18n.js`, `const.js`: como no Pine3 View.
+
+Em tablets com até 4 GB de memória (como o Galaxy Tab A7) o painel usa "vidro leve" por defeito:
+sem desfoque, com um preenchimento mais denso e um brilho mais forte. Muda-se por dispositivo nas Definições.
+
 ## Testes
 ```
 pip install -r requirements_test.txt

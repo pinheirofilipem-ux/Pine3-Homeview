@@ -397,14 +397,14 @@ export const css3d = `
 .fl3{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
 .fl3 .r3{pointer-events:auto}
 .fl3 .r3.shape{pointer-events:none}
-.slab{position:absolute;pointer-events:none;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 60px rgba(0,0,0,.35);transform:translateZ(-2px)}
+.slab{position:absolute;pointer-events:none;border-radius:14px;background:rgba(255,255,255,min(var(--glass-max),calc(.07 * var(--glass-k) + var(--glass-b))));border:1px solid rgba(var(--fg),min(1,calc(.12 * var(--fg-k))));box-shadow:0 30px 60px rgba(0,0,0,calc(.35 * var(--shade-k)));transform:translateZ(-2px)}
 .r3{position:absolute;transform-style:preserve-3d;cursor:pointer;padding:3px}
-.r3 .fl{position:absolute;inset:3px;border-radius:10px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);transition:background .3s,box-shadow .3s}
-.r3:hover .fl{background:rgba(255,255,255,.16)}
+.r3 .fl{position:absolute;inset:3px;border-radius:10px;background:rgba(255,255,255,min(var(--glass-max),calc(.10 * var(--glass-k) + var(--glass-b))));border:1px solid rgba(var(--fg),min(1,calc(.16 * var(--fg-k))));transition:background .3s,box-shadow .3s}
+.r3:hover .fl{background:rgba(255,255,255,min(var(--glass-max),calc(.16 * var(--glass-k) + var(--glass-b))))}
 .r3{--lc:var(--amber);--li:1}
-.r3.lit .fl{background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--lc) calc(var(--li) * 85%),transparent) 0%,color-mix(in srgb,var(--lc) calc(var(--li) * 50%),transparent) 55%,color-mix(in srgb,var(--lc) calc(var(--li) * 22%),transparent) 100%);box-shadow:0 0 calc(var(--li) * 44px) color-mix(in srgb,var(--lc) calc(var(--li) * 55%),transparent);border-color:color-mix(in srgb,var(--lc) 70%,#fff)}
-.r3 .wl{position:absolute;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);backface-visibility:visible}
-.r3.lit .wl{background:color-mix(in srgb,var(--lc) calc(var(--li) * 24%),rgba(255,255,255,.12));border-color:color-mix(in srgb,var(--lc) 45%,rgba(255,255,255,.3))}
+.r3.lit .fl{background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--lc) calc(var(--li) * 85%),transparent) 0%,color-mix(in srgb,var(--lc) calc(var(--li) * 50%),transparent) 55%,color-mix(in srgb,var(--lc) calc(var(--li) * 22%),transparent) 100%);box-shadow:0 0 calc(var(--li) * 44px) color-mix(in srgb,var(--lc) calc(var(--li) * 55%),transparent);border-color:color-mix(in srgb,var(--lc) 70%,rgb(var(--fg)))}
+.r3 .wl{position:absolute;background:rgba(255,255,255,min(var(--glass-max),calc(.10 * var(--glass-k) + var(--glass-b))));border:1px solid rgba(var(--fg),min(1,calc(.20 * var(--fg-k))));backface-visibility:visible}
+.r3.lit .wl{background:color-mix(in srgb,var(--lc) calc(var(--li) * 24%),rgba(255,255,255,min(var(--glass-max),calc(.12 * var(--glass-k) + var(--glass-b)))));border-color:color-mix(in srgb,var(--lc) 45%,rgba(var(--fg),min(1,calc(.3 * var(--fg-k)))))}
 .r3.open .wl.s,.r3.open .wl.e{border-style:dashed}
 .r3 .wl.n{left:3px;right:3px;top:3px;height:var(--wall);transform-origin:top;transform:rotateX(90deg)}
 .r3 .wl.s{left:3px;right:3px;bottom:3px;height:var(--wall);transform-origin:bottom;transform:rotateX(-90deg)}
@@ -412,47 +412,47 @@ export const css3d = `
 .r3 .wl.e{top:3px;bottom:3px;right:3px;width:var(--wall);transform-origin:right;transform:rotateY(90deg)}
 .r3.shape{padding:0;pointer-events:none}
 .r3.shape .fl.c{inset:auto;border-radius:0;border:0;pointer-events:auto}
-.r3.shape.lit .fl.c{background:color-mix(in srgb,var(--lc) calc(var(--li) * 62%),rgba(255,255,255,.12));box-shadow:none}
+.r3.shape.lit .fl.c{background:color-mix(in srgb,var(--lc) calc(var(--li) * 62%),rgba(255,255,255,min(var(--glass-max),calc(.12 * var(--glass-k) + var(--glass-b)))));box-shadow:none}
 .r3.shape .pin{pointer-events:auto}
 .r3 .wl.ws{right:auto;bottom:auto}
 .r3 .wl.ws.n{transform-origin:top;transform:rotateX(90deg)}
 .r3 .wl.ws.s{transform-origin:bottom;transform:rotateX(-90deg)}
 .r3 .wl.ws.w{transform-origin:left;transform:rotateY(-90deg)}
 .r3 .wl.ws.e{transform-origin:right;transform:rotateY(90deg)}
-.pin{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.6);transform:translateZ(3px);cursor:pointer}
+.pin{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:rgba(255,255,255,min(var(--glass-max),calc(.35 * var(--glass-k) + var(--glass-b))));border:2px solid rgba(var(--fg),min(1,calc(.6 * var(--fg-k))));transform:translateZ(3px);cursor:pointer}
 .pin.k-ceiling{transform:translateZ(calc(var(--wall) - 2px));width:20px;height:20px;margin:-10px 0 0 -10px}
 .pin.k-ceiling.on{box-shadow:0 0 calc(10px + var(--li) * 16px) calc(var(--li) * 9px) var(--lc)}
 .pin.k-strip{--len:44px;--rot:0deg;width:var(--len);height:8px;margin:-4px 0 0 calc(var(--len) / -2);border-radius:4px;transform:translateZ(3px) rotate(var(--rot))}
 .pin.k-strip.on{box-shadow:0 0 calc(8px + var(--li) * 12px) calc(var(--li) * 6px) var(--lc)}
 .mk3{position:absolute;transform-style:preserve-3d;pointer-events:auto;cursor:pointer}
 .mki{transform:translateZ(16px) rotateZ(calc(var(--rz) * -1)) rotateX(calc(var(--rx) * -1)) translate(-50%,-50%);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
-  background:rgba(25,14,28,.8);color:#fff;border:2px solid rgba(255,255,255,.45);box-shadow:0 4px 12px rgba(0,0,0,.4);transform-origin:0 0}
+  background:rgba(var(--deep-rgb, 25,14,28),min(var(--deep-max),calc(.8 + var(--deep-add))));color:rgb(var(--fg));border:2px solid rgba(var(--fg),min(1,calc(.45 * var(--fg-k))));box-shadow:0 4px 12px rgba(0,0,0,calc(.4 * var(--shade-k)));transform-origin:0 0}
 .mki ha-icon{--mdc-icon-size:18px}
-.mk3.on .mki{background:var(--cream);color:var(--ink);border-color:#fff;box-shadow:0 0 16px color-mix(in srgb,var(--amber) 60%,transparent)}
+.mk3.on .mki{background:var(--cream);color:var(--ink);border-color:rgb(var(--fg));box-shadow:0 0 16px color-mix(in srgb,var(--amber) 60%,transparent)}
 .r3.shape .mk3{pointer-events:auto}
 .pin{--lc:var(--amber);--li:1}
 .pin.on{background:color-mix(in srgb,var(--lc) 35%,#fff);border-color:var(--lc);box-shadow:0 0 calc(6px + var(--li) * 12px) calc(var(--li) * 5px) var(--lc)}
-/* the light it casts on the floor: its own colour, wider and brighter with the brightness */
+/* the light it casts on the floor:its own colour, wider and brighter with the brightness */
 .pool{--lc:var(--amber);--li:1;position:absolute;width:calc(60px + var(--li) * 90px);height:calc(60px + var(--li) * 90px);border-radius:50%;transform:translate(-50%,-50%) translateZ(1px);pointer-events:none;
   background:radial-gradient(closest-side,color-mix(in srgb,var(--lc) calc(var(--li) * 75%),transparent),color-mix(in srgb,var(--lc) calc(var(--li) * 30%),transparent) 55%,transparent)}
 .pool.k-strip{--len:44px;--rot:0deg;width:calc(var(--len) + 30px + var(--li) * 40px);height:calc(28px + var(--li) * 34px);border-radius:999px;transform:translate(-50%,-50%) translateZ(1px) rotate(var(--rot))}
 .lbw{position:absolute;left:50%;top:50%;transform-style:preserve-3d;transform:translateZ(calc(var(--wall) + 26px)) rotateZ(calc(var(--rz) * -1)) rotateX(calc(var(--rx) * -1));pointer-events:none}
-.lb{transform:translate(-50%,-100%) scale(var(--zi,1));transform-origin:50% 100%;white-space:nowrap;text-align:center;padding:6px 12px;border-radius:14px;background:rgba(20,10,22,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);line-height:1.2}
+.lb{transform:translate(-50%,-100%) scale(var(--zi,1));transform-origin:50% 100%;white-space:nowrap;text-align:center;padding:6px 12px;border-radius:14px;background:rgba(var(--deep-rgb, 20,10,22),min(var(--deep-max),calc(.55 + var(--deep-add))));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(var(--fg),min(1,calc(.14 * var(--fg-k))));line-height:1.2}
 .lb b{display:block;font-family:var(--display);font-weight:500;font-size:15px}
 .lb small{display:block;font-size:12px;color:var(--muted)}
 .r3.lit .lb{background:color-mix(in srgb,var(--cream) 92%,transparent);color:var(--ink)}
 .r3.lit .lb small{color:var(--ink-soft)}
 .flab{transform:translateZ(4px) rotateZ(calc(var(--rz) * -1)) rotateX(calc(var(--rx) * -1))}
-.flab .lb{background:rgba(20,10,22,.45);border:0;transform:translate(-50%,-50%) scale(var(--zi,1));transform-origin:50% 50%}
+.flab .lb{background:rgba(var(--deep-rgb, 20,10,22),min(var(--deep-max),calc(.45 + var(--deep-add))));border:0;transform:translate(-50%,-50%) scale(var(--zi,1));transform-origin:50% 50%}
 .flab .lb small{font-size:13px;letter-spacing:.18em;text-transform:uppercase}
 .ctl3{position:absolute;right:16px;top:16px;display:flex;gap:8px}
 .hint3{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:13px;color:var(--muted);pointer-events:none;padding:0 16px}
 @media (max-width:720px){.flab{display:none}}
-/* 3D light: the same scene without the costly bits (blur, big shadows, transitions) */
-.stage.lite3d,.stage.cvs{background:rgba(255,255,255,.06);border:1px solid var(--line)}
+/* 3D light:the same scene without the costly bits (blur, big shadows, transitions) */
+.stage.lite3d,.stage.cvs{background:rgba(255,255,255,min(var(--glass-max),calc(.06 * var(--glass-k) + var(--glass-b))));border:1px solid var(--line)}
 .lite3d .scene3d,.lite3d .r3 .fl{transition:none}
 .lite3d .slab,.lite3d .r3.lit .fl,.lite3d .pin.on,.lite3d .pin.k-ceiling.on,.lite3d .pin.k-strip.on,.lite3d .mki,.lite3d .mk3.on .mki{box-shadow:none}
-.lite3d .lb{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(20,10,22,.8)}
+.lite3d .lb{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(var(--deep-rgb, 20,10,22),min(var(--deep-max),calc(.8 + var(--deep-add))))}
 .lite3d .r3.lit .lb{background:var(--cream)}
 .lite3d .pool{background:radial-gradient(closest-side,color-mix(in srgb,var(--lc) calc(var(--li) * 55%),transparent),transparent)}
 ${cssCanvas}`;

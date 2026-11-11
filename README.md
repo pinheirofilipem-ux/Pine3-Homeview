@@ -31,6 +31,17 @@ Main target: a Samsung Galaxy Tab A7 in landscape on the wall, running
 Requires Home Assistant 2024.7 or newer. It uses its own domain (`pine3_homeview`), settings and
 per-device options, so it does not interfere with an installed Pine3 View.
 
+## Code layout
+`custom_components/pine3_homeview/frontend/`:
+- `pine3-homeview-panel.js`: the panel element (life cycle, data, rendering).
+- `model.js`: rooms and per-entity helpers. `util.js`: shared helpers.
+- `views/`: home, rooms, settings and forecast screens. `ui/`: tiles, detail sheet, dock, edit mode, device options, events.
+- `tokens.js`: colour tokens for the dark and light appearances (`theme.js` adds the light set on light themes).
+- `styles.js`, `house3d.js`, `plan2d.js`, `housecanvas.js`, `weather.js`, `i18n.js`, `const.js`: as in Pine3 View.
+
+On tablets with up to 4 GB of memory (such as the Galaxy Tab A7) the panel uses "light glass" by
+default: no blur, with a denser fill and a stronger sheen. It can be changed per device in Settings.
+
 ## Tests
 ```
 pip install -r requirements_test.txt
