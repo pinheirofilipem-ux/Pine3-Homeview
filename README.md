@@ -31,7 +31,11 @@ Available now:
 
 The calendar reads Home Assistant's `calendar.*` and `todo.*` entities. iCloud calendars come in through the **CalDAV** integration (with an app-specific password); iCloud Reminders are usually not available over CalDAV, so a local Home Assistant list works instead. Choose the calendars and the list in **Settings → Home → Calendar**.
 
-Fluxo arrives in a later phase.
+- **Casa 3D**: the 3D view of the home as a face (on weaker tablets, the 3D picture).
+- **Fotografias** (photos): a digital frame with the photos of a Home Assistant media folder (`/media`), with the time, date and weather over them. Choose the folder and how long each photo shows in **Settings → Home → Photos**.
+- **Fluxo** (flow): slowly moving glass shapes with the time; they move aside under a finger.
+
+Photos, Clock, Clock and calendar and Flow can be the ambient face. 3D Home, Photos and Flow start switched off: turn them on in **Settings → Home → Faces**.
 
 ### Planned
 - **Painel** (start face): the Pine3 home screen with status chips and Favourites.

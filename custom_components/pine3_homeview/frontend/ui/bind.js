@@ -10,8 +10,11 @@ export class BindMixin {
   _bind() {
     const root = this.shadowRoot;
     const on = (sel, fn) => root.querySelectorAll(sel).forEach((el) => el.addEventListener("click", (ev) => { if (!this._ghost(el)) fn(el, ev); }));
-    if (this._view === "home") this._bindFaces(root);
+    const face = this._view === "home" ? this._faceId() : null;
+    if (face) this._bindFaces(root);
+    if (face === "fluxo") this._startFlow(root);
     if (this._ambient) return;
+    const house = this._view === "house" || face === "casa3d";
     on('[data-act="back"]', () => { this._edit = null; this._go("home"); });
     on('[data-act="menu"]', () => this.dispatchEvent(new Event("hass-toggle-menu", { bubbles: true, composed: true })));
     on('[data-act="settings"]', () => this._openSettings());
@@ -22,7 +25,7 @@ export class BindMixin {
       this._bindEdit(root);
     } else {
       on("[data-nav]", (el) => this._go(el.dataset.nav));
-      if (this._view !== "house") on("[data-room]", (el) => this._go("room", el.dataset.room));
+      if (!house) on("[data-room]", (el) => this._go("room", el.dataset.room));
       on("[data-roomlights]", (el, ev) => {
         ev.stopPropagation();
         const r = this._rooms().find((x) => x.id === el.dataset.roomlights);
@@ -82,7 +85,7 @@ export class BindMixin {
           else this._tap(id);
         });
       });
-      if (this._view === "house") bindHouse(this, root);
+      if (house) bindHouse(this, root);
     }
 
     // modal
