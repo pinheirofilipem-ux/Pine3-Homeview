@@ -23,7 +23,7 @@ Escolhe os faces, a ordem, o face inicial e o face ambiente em **Definições �
 
 Já disponíveis:
 - **Painel**: relógio e estado da casa à esquerda; chips de estado (Clima, Luzes, Segurança, Aspirador, A tocar), Favoritos, cenas e divisões à direita. Põe ou tira um Favorito com a estrela na folha de detalhe de cada dispositivo, ou no modo de edição (✎).
-- **Mosaico**: grelha 4×3 de tiles grandes (S 1×1, M 2×1, L 2×2), preenchida sozinha até a editares. No modo de edição arrastas, tiras (−), mudas o tamanho (S/M/L) e adicionas dispositivos, o relógio ou a meteorologia. Toque liga e desliga; toque longo abre o detalhe.
+- **Mosaico**: grelha 4×3 de tiles grandes (S 1×1, M 2×1, L 2×2), preenchida sozinha até a editares. No modo de edição arrastas, tiras (−), mudas o tamanho (S/M/L) e adicionas dispositivos, o relógio digital ou analógico e a meteorologia. Toque liga e desliga; toque longo abre o detalhe.
 - **Relógio**: hora grande, data, tempo e luzes acesas.
 
 O Mosaico+ e o Fluxo chegam nas próximas fases.

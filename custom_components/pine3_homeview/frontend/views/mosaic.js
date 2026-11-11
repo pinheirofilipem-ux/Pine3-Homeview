@@ -11,7 +11,8 @@ const AREA = { s: 1, m: 2, l: 4 };
 const NEXT_SIZE = { s: "m", m: "l", l: "s" };
 /** Widgets that are not entities. */
 export const WIDGETS = {
-  "@clock": { icon: "mdi:clock-outline", label: "Relógio", size: "s" },
+  "@time": { icon: "mdi:clock-digital", label: "Relógio digital", size: "s" },
+  "@clock": { icon: "mdi:clock-outline", label: "Relógio analógico", size: "s" },
   "@weather": { icon: "mdi:weather-partly-cloudy", label: "Meteorologia", size: "m" },
 };
 // what a tile can show (sensors and buttons stay in their rooms)
@@ -44,7 +45,8 @@ export class MosaicMixin {
     };
     const climate = all.find((i) => dom(i) === "climate");
     if (climate) add(climate, "l");
-    add("@clock", "s");
+    add("@time", "s");
+    add("@weather", "m");
     const vac = all.find((i) => dom(i) === "vacuum");
     if (vac) add(vac, "m");
     for (const d of ["light", "lock", "cover", "switch", "fan"]) for (const i of all) if (dom(i) === d) add(i, "s");
@@ -78,8 +80,9 @@ export class MosaicMixin {
   _mosTile({ id, size }, rooms) {
     if (id === "@clock") return `<div class="mt glass mt-clock" data-analog="${size === "s" ? "" : "n"}">${analogClock(new Date(), size !== "s")}</div>`;
     if (id === "@weather") return this._mosWeather(size);
+    if (id === "@time") return `<div class="mt glass mt-time ${size}"><div class="clock">${this._clockText()}</div><div class="st">${esc(this._dateText(size === "s" ? { weekday: "short", day: "numeric", month: "short" } : undefined))}</div></div>`;
     const d = dom(id), s = this._s(id), on = this._isOn(id), room = rooms.find((r) => r.ents.includes(id));
-    if (d === "climate" && size !== "s") return this._climateCard(id, room).replace('class="tile clx big', 'class="tile clx big mt-clx');
+    if (d === "climate" && size !== "s") return this._mosClimate(id, size, room);
     const where = room && room.id !== "_none" ? this._roomName(room) : "";
     const sub = [where, this._stateText(id)].filter(Boolean).join(" · ");
     const power = ["light", "switch", "fan", "input_boolean"].includes(d);
@@ -102,6 +105,28 @@ export class MosaicMixin {
     return `<div class="mt ${on || sceneOn ? "on" : "glass"} ${d === "scene" ? "mt-scene" : ""} ${s.state === "unavailable" ? "na" : ""}" ${d === "scene" ? `data-scene="${esc(id)}"` : `data-ent="${esc(id)}"`} style="--acc:${this._accent(id)}">
       <div class="mt-top"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>${power && size !== "s" ? `<div class="pw" data-pw="${esc(id)}"><ha-icon icon="mdi:power"></ha-icon></div>` : ""}</div>
       <div class="mt-tx"><div class="nm">${esc(this._name(id))}</div><div class="st">${esc(d === "scene" ? t("Cena") : sub)}</div>${extra}</div>
+    </div>`;
+  }
+
+  /** Climate, M or L: the target in large type with up / down arrows beside it, and quick modes (L). */
+  _mosClimate(id, size, room) {
+    const s = this._s(id), a = s.attributes, on = this._isOn(id), na = s.state === "unavailable";
+    const tgt = this._climateTarget(id);
+    const range = tgt == null && a.target_temp_low != null && a.target_temp_high != null;
+    const act = on && a.hvac_action && !["off", "idle"].includes(a.hvac_action) ? a.hvac_action : null;
+    const big = on && tgt != null ? num(tgt) : on && range ? `${num(a.target_temp_low)}–${num(a.target_temp_high)}` : a.current_temperature != null ? num(Math.round(a.current_temperature)) : "–";
+    const where = room && room.id !== "_none" ? this._roomName(room) : "";
+    const sub = [where, on && a.current_temperature != null ? `${t("Atual")} ${num(a.current_temperature)}°` : "", this._st(act || s.state)].filter(Boolean).join(" · ");
+    const short = { cool: t("Frio"), heat: t("Calor"), heat_cool: t("Auto"), auto: t("Auto"), dry: t("Seco"), fan_only: t("Ventilar"), off: "Off" };
+    const arrows = on && tgt != null && !na ? `<div class="mt-arrows">
+        <button data-ctemp="${esc(id)}" data-d="1" title="${t("Subir")}" aria-label="${t("Subir")}"><ha-icon icon="mdi:chevron-up"></ha-icon></button>
+        <button data-ctemp="${esc(id)}" data-d="-1" title="${t("Baixar")}" aria-label="${t("Baixar")}"><ha-icon icon="mdi:chevron-down"></ha-icon></button></div>` : "";
+    const modes = this._climateQuickModes(id);
+    const seg = size === "l" && !na && modes.length > 1 ? `<div class="clx-seg">${modes.map((m) => `<button class="${m === s.state ? "act" : ""}" data-chvac="${esc(id)}" data-m="${m}">${short[m] || this._st(m)}</button>`).join("")}</div>` : "";
+    return `<div class="mt mt-ac ${size} ${on ? "on" : "glass"} ${na ? "na" : ""}" data-open="${esc(id)}" style="--acc:${this._accent(id)}">
+      <div class="mt-acrow"><div class="mt-acnum ${String(big).length > 3 ? "long" : ""}"><b>${big}</b><sup>°</sup></div>${arrows}</div>
+      <div class="mt-tx"><div class="nm">${esc(this._name(id))}</div><div class="st">${esc(sub)}</div></div>
+      ${seg}
     </div>`;
   }
 

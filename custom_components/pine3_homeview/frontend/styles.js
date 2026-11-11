@@ -760,7 +760,7 @@ a.pill{color:inherit;text-decoration:none}
 .mc{position:relative;min-width:0;min-height:0}
 .mc.m{grid-column:span 2}
 .mc.l{grid-column:span 2;grid-row:span 2}
-.mc>.mt,.mc>.tile{height:100%;min-height:0}
+.mc>.mt{height:100%;min-height:0}
 .mt{position:relative;height:100%;border-radius:var(--r);padding:20px;display:flex;flex-direction:column;cursor:pointer;min-width:0;overflow:hidden;transition:background .25s,color .25s,transform .12s;user-select:none;-webkit-user-select:none}
 .mt:active{transform:scale(.98)}
 .mt.on{background:var(--cream);color:var(--ink);box-shadow:0 18px 40px -18px rgba(0,0,0,calc(.45 * var(--shade-k)))}
@@ -803,13 +803,29 @@ a.pill{color:inherit;text-decoration:none}
 .mt-hrs div{display:flex;flex-direction:column;gap:2px}
 .mt-hrs small{font-size:13px;color:var(--muted)}
 .mt-hrs b{font-size:17px;font-weight:600}
-.mc>.tile.mt-clx{border-radius:var(--r);padding:24px;grid-template-columns:auto minmax(0,1fr)}
-.mc.l>.tile.mt-clx{grid-template-columns:1fr;justify-items:center;text-align:center;align-content:center}
-.mc.l>.tile.mt-clx .clx-ring{width:min(200px,60%)}
-.mc.l>.tile.mt-clx .clx-t b{font-size:64px}
-.mc.l>.tile.mt-clx .clx-r{align-items:center}
-.mc.l>.tile.mt-clx .clx-pm button{width:60px;height:60px;font-size:28px}
-.mc.l>.tile.mt-clx .clx-seg button{font-size:15px;padding:8px 14px}
+.mt-ac{gap:10px}
+.mt-acrow{display:flex;align-items:center;gap:18px}
+.mt-acnum{display:flex;align-items:flex-start;font-family:var(--display);font-weight:300;line-height:.9;font-variant-numeric:tabular-nums}
+.mt-acnum b{font-weight:300;font-size:clamp(64px,7vw,96px);letter-spacing:-.03em}
+.mt-ac.l .mt-acnum b{font-size:clamp(88px,10vw,140px)}
+.mt-acnum.long b{font-size:clamp(46px,5vw,68px)}
+.mt-acnum sup{font-size:32px}
+.mt-arrows{display:flex;flex-direction:column;gap:10px;margin-left:auto}
+.mt-arrows button{all:unset;cursor:pointer;width:62px;height:52px;border-radius:18px;display:grid;place-items:center;background:var(--glass-hi);border:1px solid var(--line)}
+.mt-ac.on .mt-arrows button{background:rgba(42,34,31,.08);border-color:transparent;color:var(--ink)}
+.mt-arrows button ha-icon{--mdc-icon-size:34px}
+.mt-arrows button:active{transform:scale(.94)}
+.mt-arrows button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.mt-ac .mt-tx{margin-top:auto}
+.mt-ac .clx-seg button{height:44px;line-height:44px;font-size:16px}
+.mt-ac.on .clx-seg{background:rgba(42,34,31,.08)}
+.mt-ac.on .clx-seg button{color:var(--ink-soft)}
+.mt-ac.on .clx-seg button.act{background:var(--ink);color:var(--cream)}
+.mt-time{justify-content:center;align-items:center;text-align:center;gap:6px}
+.mt-time .clock{margin:0;font-weight:200;font-size:clamp(54px,6vw,76px);line-height:1}
+.mt-time.m .clock{font-size:clamp(84px,9vw,120px)}
+.mt-time.l .clock{font-size:clamp(120px,13vw,190px)}
+.mt-time .st{font-size:17px}
 .ed-sz{all:unset;position:absolute;right:-10px;bottom:-10px;z-index:2;min-width:34px;height:34px;padding:0 4px;border-radius:17px;background:#fff;color:var(--ink);display:grid;place-items:center;cursor:pointer;font-weight:700;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,calc(.35 * var(--shade-k)))}
 .editing .mc[data-key],.editing .ft[data-key]{animation:wob .35s ease-in-out infinite alternate;cursor:grab;touch-action:none}
 .editing .mc[data-key]:nth-child(2n),.editing .ft[data-key]:nth-child(2n){animation-delay:-.17s}

@@ -202,4 +202,6 @@ export const EN = {
   "{n} abertos": "{n} open",
   "Tirar dos Favoritos": "Remove from Favourites",
   "Pôr nos Favoritos": "Add to Favourites",
+  "Relógio digital": "Digital clock",
+  "Relógio analógico": "Analog clock",
 };

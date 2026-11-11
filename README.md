@@ -23,7 +23,7 @@ Choose the faces, their order, the start face and the ambient face in **Settings
 
 Available now:
 - **Painel**: the clock and home status on the left; status chips (Climate, Lights, Security, Vacuum, Now playing), Favourites, scenes and rooms on the right. Add or remove a Favourite with the star on a device's detail sheet, or in edit mode (✎).
-- **Mosaico**: a 4×3 grid of large tiles (S 1×1, M 2×1, L 2×2) that fills itself until you edit it. In edit mode you drag, remove (−), resize (S/M/L) and add devices, the clock or the weather. A tap toggles; a long press opens the details.
+- **Mosaico**: a 4×3 grid of large tiles (S 1×1, M 2×1, L 2×2) that fills itself until you edit it. In edit mode you drag, remove (−), resize (S/M/L) and add devices, the digital or analog clock and the weather. A tap toggles; a long press opens the details.
 - **Relógio**: large time, date, weather and lights on.
 
 Mosaico+ and Fluxo arrive in the next phases.
