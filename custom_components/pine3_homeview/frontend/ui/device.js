@@ -67,5 +67,6 @@ export class DeviceMixin {
   _dateText(opts = { weekday: "long", day: "numeric", month: "long" }) { return cap(new Date().toLocaleDateString(locale(), opts)); }
   _updateClock() {
     this.shadowRoot.querySelectorAll(".clock").forEach((el) => { el.textContent = this._clockText(); });
+    this._updateAnalog();
   }
 }
