@@ -44,6 +44,14 @@ Photos, Clock, Clock and calendar and Flow can be the ambient face. 3D Home, Pho
 - **Relógio e agenda**: date, month, sunrise and weather, made to be read from far away.
 - **Fluxo**: an ambient animated face.
 
+## With the Pine3 Wallpanel app
+In the [Pine3 Wallpanel](https://github.com/pinheirofilipem-ux/wallpanel-android) app (version 1.1 or newer) the panel finds the app on its own and:
+- movement in front of the tablet (front camera) counts as a touch and brings the panel out of the ambient face;
+- when the screen comes back on, it shows the start face;
+- the ambient face lowers the brightness (50% by day, 12% at night, by the sun), back to the system's when someone comes close.
+
+Change the brightness in **Settings → Home → This device**. For the ambient face to show before the screen goes off, set the app's time without movement longer than the panel's "Ambient face after" (for example 10 min in the app and 2 min in the panel). In a normal browser none of this changes anything.
+
 ## Install with HACS
 1. **HACS** → **⋮** → **Custom repositories**: `https://github.com/pinheirofilipem-ux/Pine3-Homeview`, type **Integration**.
 2. Download **Pine3 Homeview** and restart Home Assistant.

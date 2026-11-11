@@ -44,6 +44,14 @@ Fotografias, Relógio, Relógio e agenda e Fluxo podem ser o face ambiente. A Ca
 - **Relógio e agenda**: data, mês, nascer do sol e meteo, para ler de longe.
 - **Fluxo**: face ambiente animado.
 
+## Com a app Pine3 Wallpanel
+Na app [Pine3 Wallpanel](https://github.com/pinheirofilipem-ux/wallpanel-android) (versão 1.1 ou mais recente) o painel deteta a app sozinho e:
+- o movimento em frente ao tablet (câmara frontal) conta como um toque e tira o painel do face ambiente;
+- quando o ecrã volta a acender, mostra o face inicial;
+- no face ambiente baixa o brilho (50% de dia, 12% de noite, pelo sol), e volta ao brilho do sistema quando alguém se aproxima.
+
+Muda o brilho em **Definições → Início → Este dispositivo**. Para o face ambiente chegar a aparecer antes de o ecrã apagar, põe na app um tempo sem movimento maior do que o "Face ambiente depois de" do painel (por exemplo 10 min na app e 2 min no painel). Num browser normal nada disto muda.
+
 ## Instalar com o HACS
 1. **HACS** → **⋮** → **Repositórios personalizados**: `https://github.com/pinheirofilipem-ux/Pine3-Homeview`, tipo **Integração**.
 2. Descarrega o **Pine3 Homeview** e reinicia o Home Assistant.
