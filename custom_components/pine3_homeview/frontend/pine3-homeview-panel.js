@@ -23,6 +23,8 @@ import { TilesMixin } from "./ui/tiles.js";
 import { ModalMixin } from "./ui/modal.js";
 import { BindMixin } from "./ui/bind.js";
 import { FacesMixin } from "./views/faces.js";
+import { MosaicMixin } from "./views/mosaic.js";
+import { PainelMixin } from "./views/painel.js";
 
 loadFonts();
 
@@ -257,6 +259,6 @@ class Pine3HomeviewPanel extends HTMLElement {
   }
 }
 
-mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin);
+mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin);
 
 if (!customElements.get("pine3-homeview-panel")) customElements.define("pine3-homeview-panel", Pine3HomeviewPanel);

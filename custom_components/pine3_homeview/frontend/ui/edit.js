@@ -19,6 +19,7 @@ export class EditMixin {
       room_order: c.room_order?.length ? [...c.room_order] : rooms.map((r) => r.id),
       hidden_rooms: [...c.hidden_rooms], big_rooms: [...c.big_rooms], hidden: [...c.hidden],
       big_devices: [...c.big_devices], device_order: clone(c.device_order || {}),
+      mosaic: clone(this._mosaicList(rooms, c)), favorites: [...this._favList(rooms, c)],
     };
     this._modal = null;
     this._render();
@@ -66,6 +67,13 @@ export class EditMixin {
     root.querySelector("[data-eddone]")?.addEventListener("click", () => this._finishEdit(true));
     root.querySelector("[data-edcancel]")?.addEventListener("click", () => this._finishEdit(false));
     root.querySelectorAll("[data-sortable]").forEach((c) => this._bindSortable(c));
+    this._bindMosaicEdit(root);
+    root.querySelectorAll("[data-edfav]").forEach((b) => b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      e.favorites = e.favorites.filter((x) => x !== b.dataset.edfav);
+      this._render();
+    }));
+    root.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => this._openModal("_pick:" + b.dataset.pick)));
   }
   _bindSortable(container) {
     const items = () => [...container.children].filter((c) => c.dataset.key);
@@ -96,6 +104,11 @@ export class EditMixin {
           const scope = container.dataset.sortable;
           if (scope === "rooms") {
             this._edit.room_order = [...keys, ...this._edit.room_order.filter((k) => !keys.includes(k))];
+          } else if (scope === "mosaic") {
+            const by = Object.fromEntries(this._edit.mosaic.map((x) => [x.id, x]));
+            this._edit.mosaic = keys.map((k) => by[k]).filter(Boolean);
+          } else if (scope === "favorites") {
+            this._edit.favorites = keys;
           } else {
             // device order within one section of a room: slot the new order back into the room's full order
             const rid = scope.slice(4);

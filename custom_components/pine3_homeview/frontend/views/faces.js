@@ -9,7 +9,7 @@ import { t, tp, num } from "../i18n.js";
 /** Every face, in the default order. `soon`: planned, not built yet. `ambient`: can be the idle face. */
 export const FACES = {
   painel: { icon: "mdi:view-dashboard-outline", label: "Painel", sub: "Relógio, estado da casa, cenas e divisões." },
-  mosaico: { icon: "mdi:view-grid-plus-outline", label: "Mosaico", sub: "Grelha de tiles grandes, para ler de longe.", soon: true },
+  mosaico: { icon: "mdi:view-grid-plus-outline", label: "Mosaico", sub: "Grelha de tiles grandes, para ler de longe." },
   mosaico_plus: { icon: "mdi:view-quilt-outline", label: "Mosaico+", sub: "Meteo, agenda, o que está a tocar e cenas.", soon: true },
   relogio: { icon: "mdi:clock-outline", label: "Relógio", sub: "Hora grande, data, tempo e luzes acesas.", ambient: true },
   fluxo: { icon: "mdi:blur", label: "Fluxo", sub: "Formas de vidro em movimento lento, com a hora.", soon: true, ambient: true },
@@ -18,7 +18,7 @@ export const FACE_IDS = Object.keys(FACES);
 const ready = (id) => FACES[id] && !FACES[id].soon;
 
 // where a swipe must not start: things that scroll sideways or take a drag of their own
-const NO_SWIPE = ".scenes,.fhs,.chips3,.hslider,.vslider,.stage,input,textarea,select,[data-noswipe]";
+const NO_SWIPE = ".scenes,.pchips,.fhs,.chips3,.hslider,.vslider,.stage,input,textarea,select,[data-noswipe]";
 const SWIPE_MIN = 70; // px
 
 export class FacesMixin {
@@ -72,6 +72,7 @@ export class FacesMixin {
     const cfg = this._cfg(), id = this._faceId(cfg), list = this._faces(cfg);
     let body;
     if (id === "relogio") body = this._clockFace(rooms, this._ambient);
+    else if (id === "mosaico") body = this._mosaicFace(rooms);
     else body = this._homeView(rooms);
     const dots = !this._ambient && !this._edit && list.length > 1
       ? `<div class="fdots" role="tablist" aria-label="${t("Faces")}">${list.map((f) =>

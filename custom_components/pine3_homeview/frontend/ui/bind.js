@@ -91,6 +91,8 @@ export class BindMixin {
     ov.addEventListener("click", (ev) => { if (ev.target === ov && !this._ghost(ov)) { this._modal = null; this._render(); } });
     on("[data-closex]", () => { this._modal = null; this._render(); });
     const id = this._modal;
+    if (id?.startsWith("_pick:")) { this._bindPicker(root, id.slice(6)); return; }
+    on("[data-fav]", () => this._toggleFav(id));
     on("[data-toggle]", () => (dom(id) === "media_player" ? this._call("media_player", this._isOn(id) ? "turn_off" : "turn_on", { entity_id: id }) : this._tap(id)));
     on("[data-src]", (el) => this._call("media_player", "select_source", { entity_id: id, source: el.dataset.src }));
     on("[data-mute]", () => this._call("media_player", "volume_mute", { entity_id: id, is_volume_muted: !this._s(id).attributes.is_volume_muted }));

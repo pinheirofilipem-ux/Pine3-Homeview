@@ -14,6 +14,7 @@ export class ModalMixin {
 
   _modalView() {
     if (this._modal === "_wx") return this._forecastSheet();
+    if (this._modal?.startsWith("_pick:")) return this._pickerSheet(this._modal.slice(6));
     const id = this._modal, s = id && this._s(id);
     if (!s) return "";
     const d = dom(id), a = s.attributes, on = this._isOn(id);
@@ -96,7 +97,7 @@ export class ModalMixin {
     const layout = cols ? `wide dev cols ${device ? "" : "cols-sm"}` : device ? "wide dev" : "";
     return `<div class="ov ${this._ovEnter(id)} ${device ? "dev" : ""}" data-close><div class="sheet ${layout}" style="--acc:${this._accent(id)}">
       <div class="hd"><div class="ic"><ha-icon icon="${this._icon(id)}"></ha-icon></div><div style="flex:1;min-width:0"><div class="nm">${esc(this._name(id))}</div><div class="st">${esc(this._stateText(id))}</div></div>
-      ${canToggle ? `<button class="pill ${on ? "act" : ""}" data-toggle>${on ? t("Desligar") : t("Ligar")}</button>` : ""}<button class="sh-x" data-closex title="${t("Fechar")}" aria-label="${t("Fechar")}"><ha-icon icon="mdi:close"></ha-icon></button></div>
+      ${canToggle ? `<button class="pill ${on ? "act" : ""}" data-toggle>${on ? t("Desligar") : t("Ligar")}</button>` : ""}<button class="sh-x sh-fav ${this._isFav(id) ? "on" : ""}" data-fav title="${this._isFav(id) ? t("Tirar dos Favoritos") : t("Pôr nos Favoritos")}" aria-label="${this._isFav(id) ? t("Tirar dos Favoritos") : t("Pôr nos Favoritos")}"><ha-icon icon="mdi:star${this._isFav(id) ? "" : "-outline"}"></ha-icon></button><button class="sh-x" data-closex title="${t("Fechar")}" aria-label="${t("Fechar")}"><ha-icon icon="mdi:close"></ha-icon></button></div>
       ${cols ? `<div class="sh-main">${left}${more}</div><div class="sh-side">${right}</div>` : `${content}${device}${more}`}</div></div>`;
   }
 
