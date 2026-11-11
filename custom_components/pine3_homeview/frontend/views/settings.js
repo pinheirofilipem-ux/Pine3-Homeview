@@ -85,7 +85,7 @@ export class SettingsViewMixin {
         })()}`;
     } else if (sec === "home") {
       const wxs = this._weather.entities(this._hass);
-      main = `${this._facesSettings(d)}<div class="panel glass"><h3 style="margin-top:0">${t("Painel")}</h3><p>${t("O que o face Painel mostra.")}</p><div class="opts">
+      main = `${this._facesSettings(d)}${this._agendaSettings(d)}<div class="panel glass"><h3 style="margin-top:0">${t("Painel")}</h3><p>${t("O que o face Painel mostra.")}</p><div class="opts">
         ${this._toggle("show_weather", d.show_weather, t("Meteorologia"), t("Pílula com a temperatura e o estado do tempo. Toca nela para ver a previsão."))}
         ${this._choice("weather_entity", d.weather_entity, [["", t("Automático")], ...wxs.map((i) => [i, esc(this._s(i).attributes.friendly_name || i)]), ["open-meteo", "Open-Meteo"]],
           t("Fonte do tempo"), t("Automático usa a primeira entidade de tempo do Home Assistant ou, se não houver, a Open-Meteo para a localização da casa."))}
@@ -215,7 +215,7 @@ export class SettingsViewMixin {
     const on = (sel, fn) => root.querySelectorAll(sel).forEach((el) => el.addEventListener("click", (ev) => fn(el, ev)));
     const upd = () => this._render();
     on("[data-sec]", (el) => { this._section = el.dataset.sec; upd(); });
-    if (this._section === "home") this._bindFacesSettings(root, d, upd);
+    if (this._section === "home") { this._bindFacesSettings(root, d, upd); this._bindAgendaSettings(root, d, upd); }
     on("[data-fs]", () => this._toggleFullscreen());
     on("[data-local]", (el) => {
       const k = el.dataset.local, v = !store.get(k, false);

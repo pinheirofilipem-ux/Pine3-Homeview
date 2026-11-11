@@ -401,7 +401,7 @@ async def test_identify_buttons_hidden(hass: HomeAssistant) -> None:
 async def test_faces_settings(hass: HomeAssistant, hass_ws_client) -> None:
     await async_setup_api(hass)
     s = hass.data["pine3_homeview"]["settings"]
-    assert s["faces"] == ["painel", "mosaico", "relogio"] and s["start_face"] == "painel" and s["ambient_face"] == "relogio"
+    assert s["faces"] == ["painel", "mosaico", "mosaico_plus", "agenda", "relogio"] and s["start_face"] == "painel" and s["ambient_face"] == "relogio"
     assert s["screensaver"] == 5
     ws = await hass_ws_client(hass)
     await ws.send_json({"id": 1, "type": "pine3_homeview/settings", "faces": ["relogio", "painel", "mosaico"],
@@ -427,5 +427,20 @@ async def test_painel_mosaic_settings(hass: HomeAssistant, hass_ws_client) -> No
     assert msg["result"]["mosaic"][0] == {"id": "climate.ac", "size": "l"}
     for bad_id, bad in enumerate([{"mosaic": [{"id": "x", "size": "xl"}]}, {"mosaic": [{"size": "s"}]},
                                   {"favorites": "light.a"}, {"home_layout": "grid"}], start=2):
+        await ws.send_json({"id": bad_id, "type": "pine3_homeview/settings", **bad})
+        assert not (await ws.receive_json())["success"], bad
+
+
+async def test_agenda_settings(hass: HomeAssistant, hass_ws_client) -> None:
+    await async_setup_api(hass)
+    s = hass.data["pine3_homeview"]["settings"]
+    assert s["calendars"] is None and s["todo_list"] == "" and s["mosaic_plus"] is None
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "pine3_homeview/settings", "calendars": ["calendar.casa"], "todo_list": "todo.lembretes",
+                        "mosaic_plus": [{"id": "@agenda", "size": "m"}], "start_face": "agenda"})
+    msg = await ws.receive_json()
+    assert msg["success"], msg
+    assert msg["result"]["calendars"] == ["calendar.casa"] and msg["result"]["todo_list"] == "todo.lembretes"
+    for bad_id, bad in enumerate([{"calendars": ["light.x"]}, {"todo_list": "calendar.x"}, {"mosaic_plus": [{"id": "x"}]}], start=2):
         await ws.send_json({"id": bad_id, "type": "pine3_homeview/settings", **bad})
         assert not (await ws.receive_json())["success"], bad

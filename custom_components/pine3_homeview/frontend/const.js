@@ -133,7 +133,8 @@ export const DEFAULTS = {
   show_weather: true, show_people: true, show_status: true, show_scenes: true, show_summary: true,
   dock: ["home", "rooms", "house", "scenes"], hidden: [], hidden_rooms: [], room_order: [],
   language: "pt", layout: "grid", home_layout: "painel", appearance: "fixed", theme_day: "linho", theme_night: "ameixa", weather_entity: "", screensaver: 5, animations: true,
-  faces: ["painel", "mosaico", "relogio"], start_face: "painel", ambient_face: "relogio", favorites: null, mosaic: null,
+  faces: ["painel", "mosaico", "mosaico_plus", "agenda", "relogio"], start_face: "painel", ambient_face: "relogio", favorites: null, mosaic: null, mosaic_plus: null,
+  calendars: null, todo_list: "",
   big_rooms: [], big_devices: [], device_order: {}, house_size: {}, house_layout: {}, shown: [], placements: {}, wall_height: 30,
 };
 export const THEME_NAMES = { ameixa: "Ameixa", pinheiro: "Pinheiro", noite: "Noite", aurora: "Aurora", areia: "Areia", oceano: "Oceano", linho: "Linho", nevoa: "Névoa", pessego: "Pêssego", menta: "Menta", lavanda: "Lavanda", ceu: "Céu", ambar: "Âmbar", coral: "Coral", lima: "Lima", azul: "Azul", violeta: "Violeta", magenta: "Magenta", turquesa: "Turquesa", por_do_sol: "Pôr do sol", nebulosa: "Nebulosa", floresta: "Floresta", ardosia: "Ardósia", vinho: "Vinho", meia_noite: "Meia-noite", brasa: "Brasa" };

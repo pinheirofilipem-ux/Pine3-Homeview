@@ -34,15 +34,21 @@ export class RoomsViewMixin {
    * Climate card with direct control (climate screen and room view): a ring with the target, the current
    * temperature, a few modes (cool / heat / off) and − / +. A tap elsewhere opens the full card.
    */
+  /** A few modes for quick buttons: cool and heat (or what the unit has), the current one, and off. */
+  _climateQuickModes(id) {
+    const s = this._s(id), all = s.attributes.hvac_modes || [];
+    let modes = ["cool", "heat"].filter((m) => all.includes(m));
+    if (modes.length < 2) modes = [...modes, ...all.filter((m) => m !== "off" && !modes.includes(m))].slice(0, 2);
+    if (all.includes("off")) modes.push("off");
+    if (s.state !== "off" && all.includes(s.state) && !modes.includes(s.state)) modes.splice(modes.length - (all.includes("off") ? 1 : 0), 0, s.state);
+    return modes;
+  }
   _climateCard(id, r) {
     const s = this._s(id), a = s.attributes, on = this._isOn(id);
     const act = on && a.hvac_action && !["off", "idle"].includes(a.hvac_action) ? a.hvac_action : null;
     const tgt = this._climateTarget(id), range = tgt == null && a.target_temp_low != null && a.target_temp_high != null;
     const all = a.hvac_modes || [], short = { cool: t("Frio"), heat: t("Calor"), heat_cool: t("Auto"), auto: t("Auto"), dry: t("Seco"), fan_only: t("Ventilar"), off: t("Desligar") };
-    let modes = ["cool", "heat"].filter((m) => all.includes(m));
-    if (modes.length < 2) modes = [...modes, ...all.filter((m) => m !== "off" && !modes.includes(m))].slice(0, 2);
-    if (all.includes("off")) modes.push("off");
-    if (s.state !== "off" && all.includes(s.state) && !modes.includes(s.state)) modes.splice(modes.length - (all.includes("off") ? 1 : 0), 0, s.state);
+    const modes = this._climateQuickModes(id);
     const mode = { heating: "heat", preheating: "heat", cooling: "cool", drying: "dry", fan: "fan_only" }[act] || s.state;
     const col = !on ? "var(--clx-off)" : { cool: "#4aa8ff", dry: "#64d2ff", fan_only: "#a8b0bd", heat: "#ff9f43", heat_cool: "#4ade80", auto: "#4ade80" }[mode] || "#ff9f43";
     const lo = a.min_temp ?? 7, hi = a.max_temp ?? 35, val = range ? a.target_temp_high : tgt ?? a.current_temperature;
