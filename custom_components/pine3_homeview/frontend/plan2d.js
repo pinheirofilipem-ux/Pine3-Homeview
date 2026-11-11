@@ -388,8 +388,8 @@ export function bindPlan(p, root, d, rooms) {
 
 export const cssPlan = `
 .pgrid{position:relative;margin-top:16px;width:100%;aspect-ratio:var(--cols)/var(--rows);border-radius:18px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair;
-  background-color:rgba(255,255,255,.04);border:1px solid var(--line);
-  background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-color:rgba(255,255,255,min(var(--glass-max),calc(.04 * var(--glass-k) + var(--glass-b))));border:1px solid var(--line);
+  background-image:linear-gradient(rgba(255,255,255,min(var(--glass-max),calc(.07 * var(--glass-k) + var(--glass-b)))) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,min(var(--glass-max),calc(.07 * var(--glass-k) + var(--glass-b)))) 1px,transparent 1px);
   background-size:calc(100% / var(--cols)) calc(100% / var(--rows))}
 .pgrid.tool-paint{cursor:cell}
 .pgrid.tool-erase{cursor:not-allowed}
@@ -415,9 +415,9 @@ export const cssPlan = `
 .wallh b{font-size:16px}
 .wallh input{flex:1;min-width:160px;accent-color:var(--amber);height:28px}
 .wallh span{font-variant-numeric:tabular-nums;color:var(--muted);min-width:28px;text-align:right}
-.pm{position:absolute;z-index:3;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;display:grid;place-items:center;background:rgba(30,18,32,.85);color:#fff;border:2px solid rgba(255,255,255,.5);pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.pm{position:absolute;z-index:3;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--deep-rgb, 30,18,32),min(var(--deep-max),calc(.85 + var(--deep-add))));color:rgb(var(--fg));border:2px solid rgba(var(--fg),min(1,calc(.5 * var(--fg-k))));pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,calc(.35 * var(--shade-k)))}
 .pm ha-icon{--mdc-icon-size:17px}
-.pst{position:absolute;z-index:2;height:8px;border-radius:4px;background:rgba(255,255,255,.45);box-shadow:0 0 0 1px rgba(0,0,0,.25);pointer-events:none}
+.pst{position:absolute;z-index:2;height:8px;border-radius:4px;background:rgba(255,255,255,min(var(--glass-max),calc(.45 * var(--glass-k) + var(--glass-b))));box-shadow:0 0 0 1px rgba(0,0,0,calc(.25 * var(--shade-k)));pointer-events:none}
 .pst.on{background:var(--amber);box-shadow:0 0 12px var(--amber)}
 .pstrip{display:flex;flex-direction:column;gap:8px;width:100%;margin:4px 0 6px}
 .pstrip label{display:flex;align-items:center;gap:12px}
@@ -425,7 +425,7 @@ export const cssPlan = `
 .pstrip input{flex:1;min-width:120px;accent-color:var(--amber);height:28px}
 .pstrip b{min-width:46px;text-align:right;font-variant-numeric:tabular-nums}
 .pstrip small{color:var(--muted);font-size:12px}
-.pm.on.k-light,.pm.on.k-ceiling,.pm.on.k-strip{background:var(--amber);color:var(--ink);border-color:#fff;box-shadow:0 0 14px var(--amber)}
+.pm.on.k-light,.pm.on.k-ceiling,.pm.on.k-strip{background:var(--amber);color:var(--ink);border-color:rgb(var(--fg));box-shadow:0 0 14px var(--amber)}
 .pm.sel{border-color:var(--amber);box-shadow:0 0 0 4px color-mix(in srgb,var(--amber) 40%,transparent)}
 .pm.drag{transform:scale(1.2)}
 .tool-place .pm{pointer-events:auto;cursor:grab}
@@ -434,7 +434,7 @@ export const cssPlan = `
 .ptypes .pill{height:34px;font-size:13px;padding:0 12px}
 .pill.placed{border-color:color-mix(in srgb,var(--amber) 60%,transparent)}
 .pill .ok{--mdc-icon-size:16px;color:var(--amber)}
-.psel{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.06)}
+.psel{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,min(var(--glass-max),calc(.06 * var(--glass-k) + var(--glass-b))))}
 .psel b{display:flex;align-items:center;gap:8px;font-size:16px}
 .psel .seg.sm{flex-wrap:wrap}
 .psel .pill{height:36px;font-size:14px;padding:0 14px}
