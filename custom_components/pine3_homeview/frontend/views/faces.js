@@ -10,7 +10,8 @@ import { t, tp, num } from "../i18n.js";
 export const FACES = {
   painel: { icon: "mdi:view-dashboard-outline", label: "Painel", sub: "Relógio, estado da casa, cenas e divisões." },
   mosaico: { icon: "mdi:view-grid-plus-outline", label: "Mosaico", sub: "Grelha de tiles grandes, para ler de longe." },
-  mosaico_plus: { icon: "mdi:view-quilt-outline", label: "Mosaico+", sub: "Meteo, agenda, o que está a tocar e cenas.", soon: true },
+  mosaico_plus: { icon: "mdi:view-quilt-outline", label: "Mosaico+", sub: "Meteo, agenda, o que está a tocar e cenas." },
+  agenda: { icon: "mdi:calendar-clock", label: "Relógio e agenda", sub: "Data, mês, agenda de hoje, música, sol e tempo.", ambient: true },
   relogio: { icon: "mdi:clock-outline", label: "Relógio", sub: "Hora grande, data, tempo e luzes acesas.", ambient: true },
   fluxo: { icon: "mdi:blur", label: "Fluxo", sub: "Formas de vidro em movimento lento, com a hora.", soon: true, ambient: true },
 };
@@ -73,6 +74,8 @@ export class FacesMixin {
     let body;
     if (id === "relogio") body = this._clockFace(rooms, this._ambient);
     else if (id === "mosaico") body = this._mosaicFace(rooms);
+    else if (id === "mosaico_plus") body = this._mosaicFace(rooms, "mosaic_plus");
+    else if (id === "agenda") body = this._agendaFace(rooms, this._ambient);
     else body = this._homeView(rooms);
     const dots = !this._ambient && !this._edit && list.length > 1
       ? `<div class="fdots" role="tablist" aria-label="${t("Faces")}">${list.map((f) =>

@@ -19,7 +19,7 @@ export class EditMixin {
       room_order: c.room_order?.length ? [...c.room_order] : rooms.map((r) => r.id),
       hidden_rooms: [...c.hidden_rooms], big_rooms: [...c.big_rooms], hidden: [...c.hidden],
       big_devices: [...c.big_devices], device_order: clone(c.device_order || {}),
-      mosaic: clone(this._mosaicList(rooms, c)), favorites: [...this._favList(rooms, c)],
+      mosaic: clone(this._mosaicList(rooms, c)), mosaic_plus: clone(this._mosaicList(rooms, c, "mosaic_plus")), favorites: [...this._favList(rooms, c)],
     };
     this._modal = null;
     this._render();
@@ -104,9 +104,9 @@ export class EditMixin {
           const scope = container.dataset.sortable;
           if (scope === "rooms") {
             this._edit.room_order = [...keys, ...this._edit.room_order.filter((k) => !keys.includes(k))];
-          } else if (scope === "mosaic") {
-            const by = Object.fromEntries(this._edit.mosaic.map((x) => [x.id, x]));
-            this._edit.mosaic = keys.map((k) => by[k]).filter(Boolean);
+          } else if (scope.startsWith("mosaic")) {
+            const by = Object.fromEntries(this._edit[scope].map((x) => [x.id, x]));
+            this._edit[scope] = keys.map((k) => by[k]).filter(Boolean);
           } else if (scope === "favorites") {
             this._edit.favorites = keys;
           } else {

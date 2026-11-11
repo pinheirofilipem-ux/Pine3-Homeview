@@ -26,7 +26,12 @@ Já disponíveis:
 - **Mosaico**: grelha 4×3 de tiles grandes (S 1×1, M 2×1, L 2×2), preenchida sozinha até a editares. No modo de edição arrastas, tiras (−), mudas o tamanho (S/M/L) e adicionas dispositivos, o relógio digital ou analógico e a meteorologia. Toque liga e desliga; toque longo abre o detalhe.
 - **Relógio**: hora grande, data, tempo e luzes acesas.
 
-O Mosaico+ e o Fluxo chegam nas próximas fases.
+- **Mosaico+**: o mesmo motor do Mosaico, a começar com a meteorologia (e avisos IPMA), a agenda de hoje, o que está a tocar, cenas e favoritos.
+- **Relógio e agenda**: dia da semana e mês, o mês inteiro com os dias que têm eventos, a agenda de hoje (eventos e lembretes), o que está a tocar, um relógio analógico, nascer e pôr do sol e o tempo. Também pode ser o face ambiente.
+
+A agenda lê as entidades `calendar.*` e `todo.*` do Home Assistant. Os calendários do iCloud entram com a integração **CalDAV** (com uma palavra-passe específica de app); os Lembretes do iCloud costumam não estar disponíveis por CalDAV, por isso podes usar uma lista local do Home Assistant. Escolhe os calendários e a lista em **Definições → Início → Agenda**.
+
+O Fluxo chega numa próxima fase.
 
 ### Previstos
 - **Painel** (face inicial): o ecrã principal do Pine3 com chips de estado e Favoritos.

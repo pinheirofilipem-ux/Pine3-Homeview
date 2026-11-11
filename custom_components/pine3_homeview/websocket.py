@@ -41,11 +41,14 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "home_layout": "painel",
     "weather_entity": "",
     "screensaver": 5,
-    "faces": ["painel", "mosaico", "relogio"],
+    "faces": ["painel", "mosaico", "mosaico_plus", "agenda", "relogio"],
     "start_face": "painel",
     "ambient_face": "relogio",
     "favorites": None,  # None: picked automatically until the user saves a list
     "mosaic": None,  # None: filled automatically until the user saves a list
+    "mosaic_plus": None,
+    "calendars": None,  # None: every calendar entity
+    "todo_list": "",  # "": the first todo entity, "none": no reminders
     "big_rooms": [],
     "big_devices": [],
     "device_order": {},
@@ -56,13 +59,14 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "wall_height": 30,
     "settings_version": 2,
 }
-FACE_IDS = ["painel", "mosaico", "mosaico_plus", "relogio", "fluxo"]
+FACE_IDS = ["painel", "mosaico", "mosaico_plus", "agenda", "relogio", "fluxo"]
 DOCK_ITEMS = ["home", "rooms", "house", "scenes", "climate", "security"]
 DEVICE_TYPES = [
     "ceiling", "lamp", "led", "spot", "bulb", "tv", "appletv", "homepod", "speaker", "ac", "fan", "purifier",
     "blind", "door", "window", "plug", "sensor", "motion", "camera", "lock", "vacuum", "other",
 ]
 COLOR = vol.Match(r"^#[0-9a-fA-F]{6}$")
+MOSAIC = vol.Any(None, vol.All([{vol.Required("id"): str, vol.Required("size"): vol.In(["s", "m", "l"])}], vol.Length(max=48)))
 REGISTRY_EVENTS = (
     "area_registry_updated",
     "device_registry_updated",
@@ -167,8 +171,10 @@ def ws_subscribe(hass: HomeAssistant, connection: websocket_api.ActiveConnection
         vol.Optional("start_face"): vol.In(FACE_IDS),
         vol.Optional("ambient_face"): vol.In(FACE_IDS),
         vol.Optional("favorites"): vol.Any(None, vol.All([str], vol.Length(max=48))),
-        vol.Optional("mosaic"): vol.Any(None, vol.All(
-            [{vol.Required("id"): str, vol.Required("size"): vol.In(["s", "m", "l"])}], vol.Length(max=48))),
+        vol.Optional("mosaic"): MOSAIC,
+        vol.Optional("mosaic_plus"): MOSAIC,
+        vol.Optional("calendars"): vol.Any(None, [vol.Match(r"^calendar\.[a-z0-9_]+$")]),
+        vol.Optional("todo_list"): vol.Any("", "none", vol.Match(r"^todo\.[a-z0-9_]+$")),
         vol.Optional("big_rooms"): [str],
         vol.Optional("big_devices"): [str],
         vol.Optional("device_order"): {str: [str]},

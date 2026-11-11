@@ -14,6 +14,8 @@ export const WIDGETS = {
   "@time": { icon: "mdi:clock-digital", label: "Relógio digital", size: "s" },
   "@clock": { icon: "mdi:clock-outline", label: "Relógio analógico", size: "s" },
   "@weather": { icon: "mdi:weather-partly-cloudy", label: "Meteorologia", size: "m" },
+  "@agenda": { icon: "mdi:calendar-today", label: "Agenda", size: "m" },
+  "@media": { icon: "mdi:music-note", label: "A tocar", size: "l" },
 };
 // what a tile can show (sensors and buttons stay in their rooms)
 const MOSAIC_DOMAINS = new Set(["light", "switch", "fan", "input_boolean", "cover", "lock", "climate", "media_player", "vacuum", "scene", "script", "humidifier", "valve", "water_heater"]);
@@ -35,7 +37,7 @@ export function analogClock(d = new Date(), numbers = false) {
 export class MosaicMixin {
 
   /** Tiles that fill the grid when nothing was saved: the climate, a clock, the vacuum, then devices. */
-  _mosaicAuto(rooms) {
+  _mosaicAuto(rooms, key = "mosaic") {
     const all = rooms.flatMap((r) => r.ents).filter((i) => this._s(i));
     const out = [], used = new Set();
     let cells = 0;
@@ -43,6 +45,14 @@ export class MosaicMixin {
       if (used.has(id) || cells + AREA[size] > MOSAIC_CELLS) return;
       used.add(id); out.push({ id, size }); cells += AREA[size];
     };
+    if (key === "mosaic_plus") {
+      // Mosaico+: weather and today's agenda on top, what's playing, then scenes and favourites
+      add("@weather", "m"); add("@agenda", "m"); add("@media", "l");
+      const scenes = all.filter((i) => dom(i) === "scene").slice(0, 2);
+      scenes.forEach((i) => add(i, "s"));
+      for (const i of this._favList(rooms)) if (cells < MOSAIC_CELLS && dom(i) !== "climate") add(i, "s");
+      return out;
+    }
     const climate = all.find((i) => dom(i) === "climate");
     if (climate) add(climate, "l");
     add("@time", "s");
@@ -56,19 +66,20 @@ export class MosaicMixin {
   }
 
   /** The saved tiles (or the automatic ones), without entities that no longer exist. */
-  _mosaicList(rooms, cfg = this._cfg()) {
-    const list = Array.isArray(cfg.mosaic) ? cfg.mosaic : this._mosaicAuto(rooms);
+  _mosaicList(rooms, cfg = this._cfg(), key = "mosaic") {
+    const list = Array.isArray(cfg[key]) ? cfg[key] : this._mosaicAuto(rooms, key);
     return list.filter((it) => it && (WIDGETS[it.id] || this._s(it.id)) && AREA[it.size]);
   }
 
-  _mosaicFace(rooms) {
-    const e = this._edit, list = this._mosaicList(rooms);
+  _mosaicFace(rooms, key = "mosaic") {
+    this._mosKey = key;
+    const e = this._edit, list = e ? e[key] : this._mosaicList(rooms, this._cfg(), key);
     const top = `<div class="mos-bar"><div class="eyebrow tdate">${esc(this._dateText())}</div><span class="sp"></span>
-      ${e ? `<button class="pill" data-pick="mosaic"><ha-icon icon="mdi:plus"></ha-icon>${t("Adicionar")}</button>` : `${this._editBtn()}${this._gear()}`}</div>`;
+      ${e ? `<button class="pill" data-pick="${key}"><ha-icon icon="mdi:plus"></ha-icon>${t("Adicionar")}</button>` : `${this._editBtn()}${this._gear()}`}</div>`;
     const cells = list.reduce((n, it) => n + AREA[it.size], 0);
     const hint = e ? `<div class="edhint">${t("Arrasta para mover. Toca em − para tirar e no tamanho para mudar entre S, M e L.")}
       ${cells > MOSAIC_CELLS ? ` <b>${t("Há mais tiles do que cabem num ecrã: as últimas ficam por baixo.")}</b>` : ""}</div>` : "";
-    return `${top}${hint}<div class="mos" data-sortable="mosaic">${list.map((it) => this._mosCell(it, rooms)).join("")}</div>`;
+    return `${top}${hint}<div class="mos" data-sortable="${key}">${list.map((it) => this._mosCell(it, rooms)).join("")}</div>`;
   }
 
   _mosCell(it, rooms) {
@@ -80,6 +91,8 @@ export class MosaicMixin {
   _mosTile({ id, size }, rooms) {
     if (id === "@clock") return `<div class="mt glass mt-clock" data-analog="${size === "s" ? "" : "n"}">${analogClock(new Date(), size !== "s")}</div>`;
     if (id === "@weather") return this._mosWeather(size);
+    if (id === "@agenda") return this._mosAgenda(size);
+    if (id === "@media") return this._mosMedia(size);
     if (id === "@time") return `<div class="mt glass mt-time ${size}"><div class="clock">${this._clockText()}</div><div class="st">${esc(this._dateText(size === "s" ? { weekday: "short", day: "numeric", month: "short" } : undefined))}</div></div>`;
     const d = dom(id), s = this._s(id), on = this._isOn(id), room = rooms.find((r) => r.ents.includes(id));
     if (d === "climate" && size !== "s") return this._mosClimate(id, size, room);
@@ -139,6 +152,7 @@ export class MosaicMixin {
     return `<div class="mt glass mt-wx" data-wx>
       <div class="mt-wxnow"><ha-icon icon="${WEATHER_ICON[w?.cond] || "mdi:weather-partly-cloudy"}"></ha-icon><b>${w ? deg(w.temp) : "–"}</b>
         <div><div class="nm">${esc(w ? this._wxLabel(w.cond) : t("A carregar o tempo…"))}</div>${today ? `<div class="st">${t("Máx.")} ${deg(today.temp)} · ${t("Mín.")} ${deg(today.low)}</div>` : ""}</div></div>
+      ${(() => { const als = this._ipmaAlerts(); return als.length ? this._alertBanner(als[0], false, als.length - 1) : ""; })()}
       ${hrs.length ? `<div class="mt-hrs">${hrs.map((f) => `<div><small>${hh(f.time)}</small><b>${deg(f.temp)}</b></div>`).join("")}</div>` : ""}
     </div>`;
   }
@@ -153,9 +167,9 @@ export class MosaicMixin {
     root.querySelectorAll("[data-edmos]").forEach((b) => b.addEventListener("click", (ev) => {
       ev.stopPropagation();
       const [op, id] = [b.dataset.edmos.slice(0, b.dataset.edmos.indexOf("|")), b.dataset.edmos.slice(b.dataset.edmos.indexOf("|") + 1)];
-      const list = this._edit.mosaic;
-      if (op === "del") this._edit.mosaic = list.filter((x) => x.id !== id);
-      else this._edit.mosaic = list.map((x) => (x.id === id ? { ...x, size: NEXT_SIZE[x.size] } : x));
+      const key = this._mosKey || "mosaic", list = this._edit[key];
+      if (op === "del") this._edit[key] = list.filter((x) => x.id !== id);
+      else this._edit[key] = list.map((x) => (x.id === id ? { ...x, size: NEXT_SIZE[x.size] } : x));
       this._render();
     }));
   }
@@ -163,17 +177,18 @@ export class MosaicMixin {
   // ---------- picker: add tiles to the Mosaico or to the Favourites ----------
   _pickerSheet(kind) {
     const rooms = this._rooms();
-    const chosen = new Set((kind === "mosaic" ? this._edit?.mosaic || [] : this._edit?.favorites || []).map((x) => (typeof x === "string" ? x : x.id)));
+    const mos = kind.startsWith("mosaic");
+    const chosen = new Set((mos ? this._edit?.[kind] || [] : this._edit?.favorites || []).map((x) => (typeof x === "string" ? x : x.id)));
     const row = (id, icon, label, sub) => `<button class="pk ${chosen.has(id) ? "on" : ""}" data-pickent="${esc(id)}">
       <ha-icon icon="${icon}"></ha-icon><span>${esc(label)}${sub ? `<small>${esc(sub)}</small>` : ""}</span><ha-icon class="pk-st" icon="mdi:${chosen.has(id) ? "check-circle" : "plus-circle-outline"}"></ha-icon></button>`;
     const groups = [];
-    if (kind === "mosaic") groups.push([t("Widgets"), Object.entries(WIDGETS).map(([id, w]) => row(id, w.icon, t(w.label), ""))]);
+    if (mos) groups.push([t("Widgets"), Object.entries(WIDGETS).map(([id, w]) => row(id, w.icon, t(w.label), ""))]);
     for (const r of rooms) {
-      const ids = r.ents.filter((i) => MOSAIC_DOMAINS.has(dom(i)) && (kind === "mosaic" || dom(i) !== "scene"));
+      const ids = r.ents.filter((i) => MOSAIC_DOMAINS.has(dom(i)) && (mos || dom(i) !== "scene"));
       if (ids.length) groups.push([this._roomName(r), ids.map((i) => row(i, dom(i) === "scene" ? this._s(i).attributes.icon || "mdi:creation-outline" : this._icon(i), this._name(i), this._stateText(i)))]);
     }
     return `<div class="ov ${this._ovEnter("_pick")}" data-close><div class="sheet wide pick">
-      <div class="hd"><div class="ic"><ha-icon icon="mdi:plus"></ha-icon></div><div style="flex:1;min-width:0"><div class="nm">${kind === "mosaic" ? t("Adicionar ao Mosaico") : t("Adicionar aos Favoritos")}</div>
+      <div class="hd"><div class="ic"><ha-icon icon="mdi:plus"></ha-icon></div><div style="flex:1;min-width:0"><div class="nm">${kind === "mosaic" ? t("Adicionar ao Mosaico") : kind === "mosaic_plus" ? t("Adicionar ao Mosaico+") : t("Adicionar aos Favoritos")}</div>
         <div class="st">${t("Toca para pôr ou tirar.")}</div></div><button class="sh-x" data-closex title="${t("Fechar")}" aria-label="${t("Fechar")}"><ha-icon icon="mdi:close"></ha-icon></button></div>
       ${groups.map(([g, rows]) => `<div class="sub">${esc(g)}</div><div class="pk-list">${rows.join("")}</div>`).join("")}
     </div></div>`;
@@ -182,9 +197,9 @@ export class MosaicMixin {
     root.querySelectorAll("[data-pickent]").forEach((b) => b.addEventListener("click", () => {
       const id = b.dataset.pickent, e = this._edit;
       if (!e) return;
-      if (kind === "mosaic") {
-        e.mosaic = e.mosaic.some((x) => x.id === id) ? e.mosaic.filter((x) => x.id !== id)
-          : [...e.mosaic, { id, size: WIDGETS[id]?.size || (["climate"].includes(dom(id)) ? "l" : ["vacuum", "media_player"].includes(dom(id)) ? "m" : "s") }];
+      if (kind.startsWith("mosaic")) {
+        e[kind] = e[kind].some((x) => x.id === id) ? e[kind].filter((x) => x.id !== id)
+          : [...e[kind], { id, size: WIDGETS[id]?.size || (["climate"].includes(dom(id)) ? "l" : ["vacuum", "media_player"].includes(dom(id)) ? "m" : "s") }];
       } else {
         e.favorites = e.favorites.includes(id) ? e.favorites.filter((x) => x !== id) : [...e.favorites, id];
       }

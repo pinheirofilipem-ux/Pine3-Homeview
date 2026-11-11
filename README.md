@@ -26,7 +26,12 @@ Available now:
 - **Mosaico**: a 4×3 grid of large tiles (S 1×1, M 2×1, L 2×2) that fills itself until you edit it. In edit mode you drag, remove (−), resize (S/M/L) and add devices, the digital or analog clock and the weather. A tap toggles; a long press opens the details.
 - **Relógio**: large time, date, weather and lights on.
 
-Mosaico+ and Fluxo arrive in the next phases.
+- **Mosaico+**: the Mosaico engine, starting with the weather (and IPMA warnings), today's calendar, what's playing, scenes and favourites.
+- **Relógio e agenda** (clock and calendar): weekday and month, the whole month with the days that have events, today's events and reminders, what's playing, an analog clock, sunrise and sunset and the weather. It can also be the ambient face.
+
+The calendar reads Home Assistant's `calendar.*` and `todo.*` entities. iCloud calendars come in through the **CalDAV** integration (with an app-specific password); iCloud Reminders are usually not available over CalDAV, so a local Home Assistant list works instead. Choose the calendars and the list in **Settings → Home → Calendar**.
+
+Fluxo arrives in a later phase.
 
 ### Planned
 - **Painel** (start face): the Pine3 home screen with status chips and Favourites.
