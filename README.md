@@ -16,7 +16,7 @@ Main target: a Samsung Galaxy Tab A7 in landscape on the wall, running
 > [`docs/plano.html`](docs/plano.html) (Portuguese).
 
 ## Faces
-Swipe sideways on the home screen to change face (or use the dots above the dock, or the arrow keys).
+Swipe sideways on the home screen to change face (or use the dots at the bottom of the screen, or the arrow keys). Painel, Mosaico, Mosaico+, Relógio e agenda and Fluxo fill the whole screen, as in the plan's mock-ups (`docs/plano.html`): the dock and the edit, full screen and settings buttons come up with the ⋯ button in the bottom right corner.
 The tablet opens on the start face (Painel) and goes back to it when you tap Home in the dock. After a while
 without touches (5 min by default) it shows the ambient face, dimmed and without the dock; a touch wakes it.
 Choose the faces, their order, the start face and the ambient face in **Settings → Home**.

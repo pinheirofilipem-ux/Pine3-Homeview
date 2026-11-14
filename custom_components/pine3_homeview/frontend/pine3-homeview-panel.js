@@ -28,6 +28,7 @@ import { PainelMixin } from "./views/painel.js";
 import { AgendaMixin } from "./views/agenda.js";
 import { AmbientMixin } from "./views/ambient.js";
 import { WallpanelMixin } from "./ui/wallpanel.js";
+import { HvMixin } from "./views/hv.js";
 
 loadFonts();
 
@@ -131,6 +132,7 @@ class Pine3HomeviewPanel extends HTMLElement {
     if (this._day && this._day !== day && !this._drag) { this._day = day; this._render(); return; }
     this._day = day;
     if (this._view === "home" && ["agenda", "mosaico_plus"].includes(this._faceId())) this._agenda();
+    if (this._dockOpen && Date.now() - this._lastActivity > 12000) { this._dockOpen = false; this._render(); return; }
     this._photoTick();
     this._updateClock();
   }
@@ -236,6 +238,11 @@ class Pine3HomeviewPanel extends HTMLElement {
     this._faceKey = face;
     this._faceDir = 0;
     this.classList.toggle("ambient", !!this._ambient);
+    // faces drawn as in the plan fill the screen; the dock comes up only with their ⋯ button
+    const hv = !!face && this._hvFace(face);
+    if (!hv) this._dockOpen = false;
+    this.classList.toggle("hvmode", hv);
+    this.classList.toggle("dockopen", hv && !!this._dockOpen);
     this._applyBrightness();
     this.classList.toggle("noanim", !anim);
     this.classList.toggle("lite", this._liteFx());
@@ -271,6 +278,6 @@ class Pine3HomeviewPanel extends HTMLElement {
   }
 }
 
-mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin, AgendaMixin, AmbientMixin, WallpanelMixin);
+mixin(Pine3HomeviewPanel, ModelMixin, DockMixin, DeviceMixin, WeatherViewMixin, SettingsViewMixin, EditMixin, HomeViewMixin, RoomsViewMixin, TilesMixin, ModalMixin, BindMixin, FacesMixin, MosaicMixin, PainelMixin, AgendaMixin, AmbientMixin, WallpanelMixin, HvMixin);
 
 if (!customElements.get("pine3-homeview-panel")) customElements.define("pine3-homeview-panel", Pine3HomeviewPanel);

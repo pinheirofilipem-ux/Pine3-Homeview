@@ -255,4 +255,13 @@ export const EN = {
   "Não mexer": "Leave it",
   "Brilho no face ambiente": "Brightness on the ambient face",
   "Automático: 50% de dia e 12% de noite (pelo sol). Sempre baixo: 12%. Fora do face ambiente, o brilho é o do sistema.": "Automatic: 50% by day and 12% at night (by the sun). Always low: 12%. Outside the ambient face the brightness is the system's.",
+  // faces as in the plan
+  "Mais": "More",
+  "Cena · ativa": "Scene · on",
+  "agora": "now",
+  "a partir das": "from",
+  "Tudo tranquilo": "All quiet",
+  "Arrasta para mover. Toca em − para tirar.": "Drag to move. Tap − to remove.",
+  "Ar": "Air",
+  "Nascer do sol": "Sunrise",
 };

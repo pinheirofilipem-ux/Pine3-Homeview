@@ -171,11 +171,6 @@ export class HomeViewMixin {
     const topBar = this._topBar(); // also prepares the people avatars
     const right = `${cfg.show_weather ? this._wxPill() : ""}${this._peopleHtml}${this._editBtn()}${this._gear()}`;
 
-    if (layout === "painel") {
-      const pgrid = rooms.length || this._edit ? `<div class="grid hgrid pgrid" data-sortable="rooms">${this._homeItems(rooms, []).join("")}${this._restoreCard(this._hiddenRooms.length)}</div>` : grid;
-      this._topBar(); // prepares the people avatars
-      return this._painelLayout(rooms, { status, lightsOn, others, lightBtns, scenesHtml, showStatus, grid: pgrid });
-    }
     if (layout === "columns") {
       // 1/3: date, a big clock, weather, people and what is on · 2/3: actions, scenes and the cards (3 rows of 4)
       const list = [...lightsOn.length ? [[`mdi:lightbulb-on`, tp(lightsOn.length, "{n} luz acesa", "{n} luzes acesas")]] : [], ...others.map((i) => [this._icon(i), this._name(i)])];

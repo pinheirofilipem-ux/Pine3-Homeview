@@ -87,12 +87,6 @@ export class AmbientMixin {
     </div></div>`;
   }
 
-  // ---------- Fluxo ----------
-  _flowFace(ambient) {
-    return `<div class="flf ${ambient ? "saver" : ""}" ${ambient ? "data-wake" : ""}><canvas data-flow aria-label="${t("Formas de vidro em movimento lento")}"></canvas>
-      <div class="fl-cap"><div class="clock">${this._clockText()}</div><div class="ph-sub">${esc(this._dateText())}</div></div></div>`;
-  }
-
   /** Animate the Fluxo canvas while it is on screen: about 30 frames a second (20 with light effects). */
   _startFlow(root) {
     const cv = root.querySelector("[data-flow]");
