@@ -128,6 +128,12 @@ def kind_of(hass: HomeAssistant, entity_id: str, entry: er.RegistryEntry | None)
     return domain
 
 
+def _device_entries(devices: dr.DeviceRegistry) -> list:
+    """Every device entry. Newer Home Assistant iterates the registry's devices as entries (looking them up
+    as a mapping is deprecated); older versions iterate their ids."""
+    return [devices.async_get(d) if isinstance(d, str) else d for d in devices.devices]
+
+
 def companions(devices: dr.DeviceRegistry, entities: er.EntityRegistry) -> dict[str, str]:
     """Devices that belong with a robot vacuum (its dock...): device id -> the vacuum's device id.
 
@@ -139,12 +145,13 @@ def companions(devices: dr.DeviceRegistry, entities: er.EntityRegistry) -> dict[
     vacuums = {e.device_id for e in entities.entities.values() if e.device_id and e.entity_id.startswith("vacuum.") and not e.disabled_by}
     if not vacuums:
         return {}
+    all_devices = [d for d in _device_entries(devices) if d]
     by_ident = {}
-    for d in devices.devices.values():
+    for d in all_devices:
         for ident in d.identifiers:
             by_ident[tuple(ident)] = d.id
     out = {}
-    for d in devices.devices.values():
+    for d in all_devices:
         if d.id in vacuums:
             continue
         parent = d.via_device_id if d.via_device_id in vacuums else None

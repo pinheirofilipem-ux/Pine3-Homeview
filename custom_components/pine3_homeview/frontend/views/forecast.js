@@ -38,7 +38,11 @@ export class WeatherViewMixin {
    * the first one; when it names its area (idAreaAviso), all of them are asked of the integration's backend
    * (pine3_homeview/ipma_warnings, every 10 minutes) and that list wins.
    */
+  /** IPMA warnings, most severe first; never breaks the panel if the IPMA entity changes shape. */
   _ipmaAlerts() {
+    try { return this._ipmaList(); } catch (e) { console.warn("Pine3 Homeview: IPMA warnings", e); return []; }
+  }
+  _ipmaList() {
     const id = this._ipma().alert, s = id && this._s(id);
     if (!s) return [];
     const a = s.attributes, when = (v) => (v ? new Date(String(v).replace(" ", "T")) : null);
@@ -55,7 +59,7 @@ export class WeatherViewMixin {
       }
     }
     const rank = { red: 3, orange: 2, yellow: 1 };
-    const fromApi = this._ipmaW?.area === area && Array.isArray(this._ipmaW.list) ? this._ipmaW.list.map(norm) : null;
+    const fromApi = area && this._ipmaW?.area === area && Array.isArray(this._ipmaW.list) ? this._ipmaW.list.map(norm) : null;
     const list = fromApi ?? (["yellow", "orange", "red"].includes(s.state) ? [norm({ ...a, awarenessLevelID: s.state })] : []);
     return list.filter((w) => rank[w.level] && !(w.end && w.end < new Date()))
       .sort((x, y) => rank[y.level] - rank[x.level] || (x.start || 0) - (y.start || 0));
