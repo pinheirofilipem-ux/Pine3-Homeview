@@ -55,6 +55,7 @@ export class MosaicMixin {
     }
     const climate = all.find((i) => dom(i) === "climate");
     if (climate) add(climate, "l");
+    add("@clock", "s");
     add("@time", "s");
     add("@weather", "m");
     const vac = all.find((i) => dom(i) === "vacuum");
@@ -69,92 +70,6 @@ export class MosaicMixin {
   _mosaicList(rooms, cfg = this._cfg(), key = "mosaic") {
     const list = Array.isArray(cfg[key]) ? cfg[key] : this._mosaicAuto(rooms, key);
     return list.filter((it) => it && (WIDGETS[it.id] || this._s(it.id)) && AREA[it.size]);
-  }
-
-  _mosaicFace(rooms, key = "mosaic") {
-    this._mosKey = key;
-    const e = this._edit, list = e ? e[key] : this._mosaicList(rooms, this._cfg(), key);
-    const top = `<div class="mos-bar"><div class="eyebrow tdate">${esc(this._dateText())}</div><span class="sp"></span>
-      ${e ? `<button class="pill" data-pick="${key}"><ha-icon icon="mdi:plus"></ha-icon>${t("Adicionar")}</button>` : `${this._editBtn()}${this._gear()}`}</div>`;
-    const cells = list.reduce((n, it) => n + AREA[it.size], 0);
-    const hint = e ? `<div class="edhint">${t("Arrasta para mover. Toca em − para tirar e no tamanho para mudar entre S, M e L.")}
-      ${cells > MOSAIC_CELLS ? ` <b>${t("Há mais tiles do que cabem num ecrã: as últimas ficam por baixo.")}</b>` : ""}</div>` : "";
-    return `${top}${hint}<div class="mos" data-sortable="${key}">${list.map((it) => this._mosCell(it, rooms)).join("")}</div>`;
-  }
-
-  _mosCell(it, rooms) {
-    const chrome = this._edit ? `<button class="ed-x" data-edmos="del|${esc(it.id)}" title="${t("Tirar")}">−</button>
-      <button class="ed-sz" data-edmos="size|${esc(it.id)}" title="${t("Tamanho")}">${it.size.toUpperCase()}</button>` : "";
-    return `<div class="mc ${it.size}" data-key="${esc(it.id)}">${chrome}${this._mosTile(it, rooms)}</div>`;
-  }
-
-  _mosTile({ id, size }, rooms) {
-    if (id === "@clock") return `<div class="mt glass mt-clock" data-analog="${size === "s" ? "" : "n"}">${analogClock(new Date(), size !== "s")}</div>`;
-    if (id === "@weather") return this._mosWeather(size);
-    if (id === "@agenda") return this._mosAgenda(size);
-    if (id === "@media") return this._mosMedia(size);
-    if (id === "@time") return `<div class="mt glass mt-time ${size}"><div class="clock">${this._clockText()}</div><div class="st">${esc(this._dateText(size === "s" ? { weekday: "short", day: "numeric", month: "short" } : undefined))}</div></div>`;
-    const d = dom(id), s = this._s(id), on = this._isOn(id), room = rooms.find((r) => r.ents.includes(id));
-    if (d === "climate" && size !== "s") return this._mosClimate(id, size, room);
-    const where = room && room.id !== "_none" ? this._roomName(room) : "";
-    const sub = [where, this._stateText(id)].filter(Boolean).join(" · ");
-    const power = ["light", "switch", "fan", "input_boolean"].includes(d);
-    let extra = "";
-    if (size !== "s" && d === "light" && on && s.attributes.brightness != null) extra = `<div class="mt-bar"><i style="width:${Math.round((s.attributes.brightness / 255) * 100)}%"></i></div>`;
-    if (size !== "s" && d === "cover" && s.attributes.current_position != null) extra = `<div class="mt-bar"><i style="width:${s.attributes.current_position}%"></i></div>`;
-    if (size !== "s" && d === "vacuum") {
-      const level = this._vacBattery(id);
-      const pct = this._vacMember(id, "sensor", "clean_percent", "cleaning_progress");
-      const p = pct ? Number(this._s(pct).state) : null;
-      extra = `${level != null ? `<div class="mt-meta"><ha-icon icon="mdi:battery"></ha-icon>${level}%</div>` : ""}${on && Number.isFinite(p) ? `<div class="mt-bar ok"><i style="width:${p}%"></i></div>` : ""}`;
-    }
-    if (size !== "s" && d === "media_player") {
-      const a = s.attributes;
-      if (a.media_title) extra = `<div class="mt-meta">${esc([a.media_title, a.media_artist].filter(Boolean).join(" · "))}</div>
-        <div class="mt-ctl"><span data-media="media_play_pause" data-ent-id="${esc(id)}"><ha-icon icon="mdi:${s.state === "playing" ? "pause" : "play"}"></ha-icon></span></div>`;
-    }
-    const icon = d === "scene" ? (s.attributes.icon || "mdi:creation-outline") : this._icon(id);
-    const sceneOn = d === "scene" && this._sceneOn(id);
-    return `<div class="mt ${on || sceneOn ? "on" : "glass"} ${d === "scene" ? "mt-scene" : ""} ${s.state === "unavailable" ? "na" : ""}" ${d === "scene" ? `data-scene="${esc(id)}"` : `data-ent="${esc(id)}"`} style="--acc:${this._accent(id)}">
-      <div class="mt-top"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>${power && size !== "s" ? `<div class="pw" data-pw="${esc(id)}"><ha-icon icon="mdi:power"></ha-icon></div>` : ""}</div>
-      <div class="mt-tx"><div class="nm">${esc(this._name(id))}</div><div class="st">${esc(d === "scene" ? t("Cena") : sub)}</div>${extra}</div>
-    </div>`;
-  }
-
-  /** Climate, M or L: the target in large type with up / down arrows beside it, and quick modes (L). */
-  _mosClimate(id, size, room) {
-    const s = this._s(id), a = s.attributes, on = this._isOn(id), na = s.state === "unavailable";
-    const tgt = this._climateTarget(id);
-    const range = tgt == null && a.target_temp_low != null && a.target_temp_high != null;
-    const act = on && a.hvac_action && !["off", "idle"].includes(a.hvac_action) ? a.hvac_action : null;
-    const big = on && tgt != null ? num(tgt) : on && range ? `${num(a.target_temp_low)}–${num(a.target_temp_high)}` : a.current_temperature != null ? num(Math.round(a.current_temperature)) : "–";
-    const where = room && room.id !== "_none" ? this._roomName(room) : "";
-    const sub = [where, on && a.current_temperature != null ? `${t("Atual")} ${num(a.current_temperature)}°` : "", this._st(act || s.state)].filter(Boolean).join(" · ");
-    const short = { cool: t("Frio"), heat: t("Calor"), heat_cool: t("Auto"), auto: t("Auto"), dry: t("Seco"), fan_only: t("Ventilar"), off: "Off" };
-    const arrows = on && tgt != null && !na ? `<div class="mt-arrows">
-        <button data-ctemp="${esc(id)}" data-d="1" title="${t("Subir")}" aria-label="${t("Subir")}"><ha-icon icon="mdi:chevron-up"></ha-icon></button>
-        <button data-ctemp="${esc(id)}" data-d="-1" title="${t("Baixar")}" aria-label="${t("Baixar")}"><ha-icon icon="mdi:chevron-down"></ha-icon></button></div>` : "";
-    const modes = this._climateQuickModes(id);
-    const seg = size === "l" && !na && modes.length > 1 ? `<div class="clx-seg">${modes.map((m) => `<button class="${m === s.state ? "act" : ""}" data-chvac="${esc(id)}" data-m="${m}">${short[m] || this._st(m)}</button>`).join("")}</div>` : "";
-    return `<div class="mt mt-ac ${size} ${on ? "on" : "glass"} ${na ? "na" : ""}" data-open="${esc(id)}" style="--acc:${this._accent(id)}">
-      <div class="mt-acrow"><div class="mt-acnum ${String(big).length > 3 ? "long" : ""}"><b>${big}</b><sup>°</sup></div>${arrows}</div>
-      <div class="mt-tx"><div class="nm">${esc(this._name(id))}</div><div class="st">${esc(sub)}</div></div>
-      ${seg}
-    </div>`;
-  }
-
-  _mosWeather(size) {
-    const w = this._wx(), fc = this._homeForecast();
-    const today = (fc?.daily || []).find((x) => new Date(x.time).toDateString() === new Date().toDateString());
-    const hrs = (fc?.hourly || []).filter((f) => f.time >= Date.now() - 30 * 60e3).slice(0, size === "l" ? 6 : 4);
-    const hh = (d) => d.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit" });
-    const deg = (v) => (v == null ? "–" : `${num(Math.round(v))}°`);
-    return `<div class="mt glass mt-wx" data-wx>
-      <div class="mt-wxnow"><ha-icon icon="${WEATHER_ICON[w?.cond] || "mdi:weather-partly-cloudy"}"></ha-icon><b>${w ? deg(w.temp) : "–"}</b>
-        <div><div class="nm">${esc(w ? this._wxLabel(w.cond) : t("A carregar o tempo…"))}</div>${today ? `<div class="st">${t("Máx.")} ${deg(today.temp)} · ${t("Mín.")} ${deg(today.low)}</div>` : ""}</div></div>
-      ${(() => { const als = this._ipmaAlerts(); return als.length ? this._alertBanner(als[0], false, als.length - 1) : ""; })()}
-      ${hrs.length ? `<div class="mt-hrs">${hrs.map((f) => `<div><small>${hh(f.time)}</small><b>${deg(f.temp)}</b></div>`).join("")}</div>` : ""}
-    </div>`;
   }
 
   /** Redraw the analog clocks (called with the digital clocks, every 15 s). */

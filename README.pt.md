@@ -16,7 +16,7 @@ Ecrã principal: um Samsung Galaxy Tab A7 deitado na parede, com a app
 > [`docs/plano.html`](docs/plano.html).
 
 ## Faces
-Desliza para o lado no início para mudar de face (ou usa os pontos por cima da dock, ou as setas do teclado).
+Desliza para o lado no início para mudar de face (ou usa os pontos no fundo do ecrã, ou as setas do teclado). O Painel, o Mosaico, o Mosaico+, o Relógio e agenda e o Fluxo ocupam o ecrã todo, como nas maquetes do plano (`docs/plano.html`): a dock e os botões de editar, ecrã inteiro e definições aparecem com o botão ⋯ no canto inferior direito.
 O tablet abre no face inicial (o Painel) e volta a ele quando tocas na Casa da dock. Depois de algum tempo
 sem toques (5 min por defeito) aparece o face ambiente, escurecido e sem a dock; um toque acorda-o.
 Escolhe os faces, a ordem, o face inicial e o face ambiente em **Definições → Início**.

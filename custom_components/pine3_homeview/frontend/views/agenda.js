@@ -69,30 +69,6 @@ export class AgendaMixin {
     return `${f(e.start)} – ${f(e.end)}`;
   }
 
-  /** A list of today's events and reminders. */
-  _agendaList(max) {
-    const d = this._todayItems(max);
-    if (!d) return `<div class="ag-empty">${t("A carregar a agenda…")}</div>`;
-    if (!this._calendars().length && !this._todoList()) return `<div class="ag-empty">${t("Sem calendários no Home Assistant. Junta o iCloud com a integração CalDAV.")}</div>`;
-    if (!d.events.length && !d.todos.length) return `<div class="ag-empty">${t("Nada marcado para hoje.")}</div>`;
-    return `<ul class="ag-list">${d.events.map((e) => `<li><b>${esc(e.title)}</b><span>${esc(this._timeRange(e))}</span></li>`).join("")}
-      ${d.todos.map((x) => `<li class="td ${x.due && x.due < new Date(new Date().setHours(0, 0, 0, 0)) ? "late" : ""}"><b>${esc(x.title)}</b><span>${x.due ? (x.due < new Date(new Date().setHours(0, 0, 0, 0)) ? t("Lembrete · atrasado") : t("Lembrete · hoje")) : t("Lembrete")}</span></li>`).join("")}</ul>`;
-  }
-
-  /** The month as a grid (weeks start on Monday), today highlighted, days with events marked. */
-  _monthGrid() {
-    const now = new Date(), y = now.getFullYear(), m = now.getMonth();
-    const first = (new Date(y, m, 1).getDay() + 6) % 7, days = new Date(y, m + 1, 0).getDate();
-    const marked = new Set((this._agenda()?.events || []).map((e) => dayKey(e.start)));
-    const wd = [...Array(7)].map((_, k) => new Date(2024, 0, 1 + k).toLocaleDateString(locale(), { weekday: "narrow" }));
-    let cells = wd.map((x) => `<span class="h">${x}</span>`).join("") + "<span></span>".repeat(first);
-    for (let d = 1; d <= days; d++) {
-      const k = dayKey(new Date(y, m, d));
-      cells += `<span class="${d === now.getDate() ? "today" : d < now.getDate() ? "past" : ""} ${marked.has(k) ? "ev" : ""}">${d}</span>`;
-    }
-    return `<div class="mg"><div class="mg-h">${esc(cap(now.toLocaleDateString(locale(), { month: "long" })))}</div><div class="mg-g">${cells}</div></div>`;
-  }
-
   /** Sunrise and sunset from sun.sun (the next ones). */
   _sunTimes() {
     const a = this._s("sun.sun")?.attributes;
@@ -106,59 +82,6 @@ export class AgendaMixin {
     const ids = Object.keys(this._hass.states).filter((i) => dom(i) === "media_player");
     return ids.find((i) => this._s(i).state === "playing") || ids.find((i) => this._s(i).state === "paused") || null;
   }
-  _mediaBlock(cls) {
-    const id = this._activeMedia();
-    if (!id) return "";
-    const s = this._s(id), a = s.attributes;
-    const room = this._rooms().find((r) => r.ents.includes(id));
-    return `<div class="np ${cls}" data-open="${esc(id)}">
-      <div class="np-art" style="${a.entity_picture ? `background-image:url('${esc(a.entity_picture)}')` : ""}">${a.entity_picture ? "" : `<ha-icon icon="mdi:music"></ha-icon>`}</div>
-      <div class="np-tx"><div class="eyebrow">${esc([t("A tocar"), room && room.id !== "_none" ? this._roomName(room) : this._name(id)].filter(Boolean).join(" · "))}</div>
-        <b>${esc(a.media_title || this._name(id))}</b><span>${esc(a.media_artist || a.app_name || "")}</span>
-        <div class="np-ctl"><button data-media="media_previous_track" data-ent-id="${esc(id)}" aria-label="${t("Anterior")}"><ha-icon icon="mdi:skip-previous"></ha-icon></button>
-          <button class="pp" data-media="media_play_pause" data-ent-id="${esc(id)}" aria-label="${s.state === "playing" ? t("Pausa") : t("Tocar")}"><ha-icon icon="mdi:${s.state === "playing" ? "pause" : "play"}"></ha-icon></button>
-          <button data-media="media_next_track" data-ent-id="${esc(id)}" aria-label="${t("Seguinte")}"><ha-icon icon="mdi:skip-next"></ha-icon></button></div></div>
-    </div>`;
-  }
-
-  /** The "Relógio e agenda" face: date and month, today's agenda and music, an analog clock, sun and weather. */
-  _agendaFace(rooms, ambient) {
-    const now = new Date(), w = this._wx(), sun = this._sunTimes();
-    const today = (this._homeForecast()?.daily || []).find((x) => new Date(x.time).toDateString() === now.toDateString());
-    const deg = (v) => (v == null ? "–" : `${num(Math.round(v))}°`);
-    const body = `<div class="agf">
-      <div class="agc">
-        <div class="ag-date"><div class="ag-wd">${esc(cap(now.toLocaleDateString(locale(), { weekday: "short" })))} <span>${esc(cap(now.toLocaleDateString(locale(), { month: "short" })))}</span></div><div class="ag-dn">${now.getDate()}</div></div>
-        ${this._monthGrid()}
-      </div>
-      <div class="agc">
-        <div class="ag-today"><div class="eyebrow">${t("Hoje")}</div>${this._agendaList(4)}</div>
-        ${this._mediaBlock("np-face")}
-      </div>
-      <div class="agc">
-        <div class="ag-clock" data-analog="n">${analogClock(now, true)}</div>
-        <div class="ag-wx" data-wx><div class="ag-h">${t("Casa")}</div><div class="ag-t"><ha-icon icon="${WEATHER_ICON[w?.cond] || "mdi:weather-partly-cloudy"}"></ha-icon>${w ? deg(w.temp) : "–"}</div>
-          <div class="ag-s">${esc(w ? this._wxLabel(w.cond) : "")}${today ? `<br>${t("Máx.")} ${deg(today.temp)} · ${t("Mín.")} ${deg(today.low)}` : ""}</div>
-          ${sun ? `<div class="ag-sun"><ha-icon icon="mdi:weather-sunset-up"></ha-icon>${sun.rise}<ha-icon icon="mdi:weather-sunset-down"></ha-icon>${sun.set}</div>` : ""}</div>
-      </div>
-    </div>`;
-    return ambient ? `<div class="saver agsaver ${this._ovEnter("_ambient")}" data-wake>${body}</div>` : body;
-  }
-
-  /** Mosaico widgets: the agenda and what's playing. */
-  _mosAgenda(size) {
-    const now = new Date();
-    return `<div class="mt glass mt-ag ${size}">
-      <div class="mt-agday"><small>${esc(cap(now.toLocaleDateString(locale(), { weekday: "long" })))}</small><b>${now.getDate()}</b></div>
-      <div class="mt-aglist">${this._agendaList(size === "l" ? 6 : size === "m" ? 3 : 1)}</div>
-    </div>`;
-  }
-  _mosMedia(size) {
-    const block = this._mediaBlock(`np-tile ${size}`);
-    return block ? `<div class="mt glass mt-np ${size}">${block}</div>`
-      : `<div class="mt glass mt-np empty ${size}"><div class="mt-top"><div class="ic"><ha-icon icon="mdi:music-note-off"></ha-icon></div></div><div class="mt-tx"><div class="nm">${t("Nada a tocar")}</div><div class="st">${t("Música e TV aparecem aqui")}</div></div></div>`;
-  }
-
   /** Settings → Home: which calendars and which reminders list. */
   _agendaSettings(d) {
     const cals = Object.keys(this._hass.states).filter((i) => dom(i) === "calendar");

@@ -21,7 +21,7 @@ export const FACE_IDS = Object.keys(FACES);
 const ready = (id) => FACES[id] && !FACES[id].soon;
 
 // where a swipe must not start: things that scroll sideways or take a drag of their own
-const NO_SWIPE = ".scenes,.pchips,.fhs,.chips3,.hslider,.vslider,.stage,input,textarea,select,[data-noswipe]";
+const NO_SWIPE = ".scenes,.pchips,.hv-chips,.fhs,.chips3,.hslider,.vslider,.stage,input,textarea,select,[data-noswipe]";
 const SWIPE_MIN = 70; // px
 
 export class FacesMixin {
@@ -46,6 +46,7 @@ export class FacesMixin {
     if (id === this._faceId()) return;
     this._faceDir = dir || (this._faces().indexOf(id) > this._faces().indexOf(this._faceId()) ? 1 : -1);
     this._face = id;
+    this._dockOpen = false;
     this._render();
   }
   _stepFace(delta) {
@@ -71,15 +72,25 @@ export class FacesMixin {
   }
 
   /** The home screen: the current face, plus the dots that show where you are. */
+  /** Faces drawn as in the plan (views/hv.js): full screen, with their own dots and no dock. */
+  _hvFace(id = this._faceId()) {
+    if (id === "painel") return (this._cfg().home_layout || "painel") === "painel";
+    return ["mosaico", "mosaico_plus", "agenda", "fluxo"].includes(id);
+  }
+
+  /** The home screen: the current face, plus the dots that show where you are. */
   _faceView(rooms) {
     const cfg = this._cfg(), id = this._faceId(cfg), list = this._faces(cfg);
+    if (this._hvFace(id)) {
+      if (id === "painel") return this._hvPainel(rooms);
+      if (id === "mosaico") return this._hvMosaic(rooms, "mosaic");
+      if (id === "mosaico_plus") return this._hvMosaic(rooms, "mosaic_plus");
+      if (id === "agenda") return this._hvAgenda();
+      if (id === "fluxo") return this._hvFlow();
+    }
     let body;
     if (id === "relogio") body = this._clockFace(rooms, this._ambient);
-    else if (id === "mosaico") body = this._mosaicFace(rooms);
-    else if (id === "mosaico_plus") body = this._mosaicFace(rooms, "mosaic_plus");
-    else if (id === "agenda") body = this._agendaFace(rooms, this._ambient);
     else if (id === "fotos") body = this._photosFace(this._ambient);
-    else if (id === "fluxo") body = this._flowFace(this._ambient);
     else if (id === "casa3d") body = this._house3dFace(rooms);
     else body = this._homeView(rooms);
     const dots = !this._ambient && !this._edit && list.length > 1

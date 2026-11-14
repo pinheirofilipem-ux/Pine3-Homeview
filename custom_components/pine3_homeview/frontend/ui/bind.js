@@ -11,7 +11,7 @@ export class BindMixin {
     const root = this.shadowRoot;
     const on = (sel, fn) => root.querySelectorAll(sel).forEach((el) => el.addEventListener("click", (ev) => { if (!this._ghost(el)) fn(el, ev); }));
     const face = this._view === "home" ? this._faceId() : null;
-    if (face) this._bindFaces(root);
+    if (face) { this._bindFaces(root); this._bindHv(root); }
     if (face === "fluxo") this._startFlow(root);
     if (this._ambient) return;
     const house = this._view === "house" || face === "casa3d";
